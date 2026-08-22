@@ -3,6 +3,7 @@ import { dataService } from '../../services/dataService';
 import { Plus, Edit2, Trash2 } from 'lucide-react';
 import { Tour } from '../../types';
 import { TourFormModal } from './TourFormModal';
+import { getImageUrl } from '../../utils/imageUrl';
 
 export const TourManager = () => {
   const [tours, setTours] = useState<Tour[]>([]);
@@ -86,18 +87,28 @@ export const TourManager = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-                {tours.map(tour => {
+                {tours.map((tour, idx) => {
+                  const tourId = tour.id || (tour as any)._id || tour.package_code || `tour-${idx}`;
                   const title = tour.title || tour.name || 'Tour Package';
-                  const loc = tour.location || 'Sri Lanka';
-                  const img = tour.image_urls?.[0] || tour.image_url || 'https://images.unsplash.com/photo-1546708973-b339540b5162';
+                  const loc = tour.location || tour.destination || 'Sri Lanka';
+                  const rawImg = tour.image_urls?.[0] || tour.image_url;
+                  const img = getImageUrl(rawImg, undefined, `${title} ${loc} ${tour.category || ''}`);
                   const dur = tour.duration || `${tour.duration_days || 3} Days`;
-                  const price = tour.price || 450;
+                  const rawPrice = tour.price;
+                  const price = typeof rawPrice === 'object' && rawPrice !== null ? Number((rawPrice as any).amount || 450) : Number(rawPrice || 450);
 
                   return (
-                    <tr key={tour.id} className="hover:bg-[var(--background)] dark:hover:bg-slate-800/20 transition-colors">
+                    <tr key={tourId} className="hover:bg-[var(--background)] dark:hover:bg-slate-800/20 transition-colors">
                       <td className="p-4">
                         <div className="flex items-center gap-3">
-                          <img src={img} alt="" className="w-10 h-10 rounded-lg object-cover bg-slate-100" />
+                          <img
+                            src={img}
+                            alt={title}
+                            className="w-10 h-10 rounded-lg object-cover bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1546708973-b339540b5162?auto=format&fit=crop&w=300&q=80';
+                            }}
+                          />
                           <div>
                             <p className="font-bold text-sm text-[var(--text)] dark:text-white">{title}</p>
                             <p className="text-[10px] text-[var(--muted)] truncate max-w-[200px]">{loc}</p>
@@ -116,7 +127,7 @@ export const TourManager = () => {
                           <button onClick={() => handleEdit(tour)} className="p-1.5 text-slate-400 hover:text-[var(--primary)] transition-colors" title="Edit">
                             <Edit2 className="w-4 h-4" />
                           </button>
-                          <button onClick={() => handleDelete(tour.id)} className="p-1.5 text-slate-400 hover:text-rose-500 transition-colors" title="Delete">
+                          <button onClick={() => handleDelete(tourId)} className="p-1.5 text-slate-400 hover:text-rose-500 transition-colors" title="Delete">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </div>

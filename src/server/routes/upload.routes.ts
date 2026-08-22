@@ -1,10 +1,11 @@
 import { Router } from 'express';
 import { uploadMiddleware, handleUpload } from '../controllers/upload.controller';
+import { optionalAuth } from '../middleware/auth';
 
 const router = Router();
 
-// POST /api/upload - handles multipart/form-data with 'image' field and JSON base64
-router.post('/', (req, res, next) => {
+// POST /api/upload - handles multipart/form-data with 'image'/'file' field and JSON base64
+router.post('/', optionalAuth, (req, res, next) => {
   uploadMiddleware(req, res, (err) => {
     if (err) {
       return res.status(400).json({

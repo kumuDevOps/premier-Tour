@@ -31,7 +31,7 @@ export const HotelsPage: React.FC = () => {
   const { t, isRTL } = useLanguage();
   const { localizeHotels } = useLocalizedContent();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { data: rawHotels, loading: loadingHotels } = useCatalogData<Hotel>('hotels', []);
+  const { data: rawHotels, loading: loadingHotels, error: hotelsError } = useCatalogData<Hotel>('hotels', []);
   const hotels = React.useMemo(() => localizeHotels(rawHotels), [rawHotels, localizeHotels]);
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || searchParams.get('city') || '');
   const [selectedAmenity, setSelectedAmenity] = useState(searchParams.get('amenity') || 'All');
@@ -57,16 +57,18 @@ export const HotelsPage: React.FC = () => {
   const allAmenities = ['All', 'Private Butler Service', 'Michelin 3-Star Dining', 'Infinity Pool', 'Chanel Spa', 'Private Plunge Pool Villas'];
 
   const filteredHotels = hotels.filter((h) => {
+    const sTerm = searchTerm.trim().toLowerCase();
     const matchesSearch =
-      !searchTerm.trim() ||
-      h.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      h.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      h.country.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      h.description.toLowerCase().includes(searchTerm.toLowerCase());
+      !sTerm ||
+      (h.name && h.name.toLowerCase().includes(sTerm)) ||
+      (h.city && h.city.toLowerCase().includes(sTerm)) ||
+      (h.country && h.country.toLowerCase().includes(sTerm)) ||
+      (h.location && h.location.toLowerCase().includes(sTerm)) ||
+      (h.description && h.description.toLowerCase().includes(sTerm));
 
     const matchesAmenity =
       selectedAmenity === 'All' ||
-      h.amenities.some((a) => a.toLowerCase().includes(selectedAmenity.toLowerCase()));
+      (Array.isArray(h.amenities) && h.amenities.some((a) => a.toLowerCase().includes(selectedAmenity.toLowerCase())));
 
     return matchesSearch && matchesAmenity;
   });
@@ -255,8 +257,30 @@ export const HotelsPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Hotels Grid */}
-        {filteredHotels.length === 0 ? (
+        {/* Hotels Grid / Loading / Error / Empty States */}
+        {loadingHotels ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
+            {[1, 2, 3, 4, 5, 6].map((n) => (
+              <div key={n} className="rounded-3xl bg-white dark:bg-[#073126] p-4 border border-slate-200 dark:border-emerald-950/40 animate-pulse">
+                <div className="h-56 bg-slate-200 dark:bg-emerald-900/30 rounded-2xl mb-4" />
+                <div className="h-4 bg-slate-200 dark:bg-emerald-900/30 rounded w-1/3 mb-2" />
+                <div className="h-6 bg-slate-200 dark:bg-emerald-900/30 rounded w-3/4 mb-4" />
+                <div className="h-4 bg-slate-200 dark:bg-emerald-900/30 rounded w-1/2" />
+              </div>
+            ))}
+          </div>
+        ) : hotelsError ? (
+          <div className="bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 p-8 rounded-3xl text-center max-w-lg mx-auto shadow-sm">
+            <h3 className="text-lg font-bold text-rose-800 dark:text-rose-300 mb-2">Unable to Load Hotels</h3>
+            <p className="text-xs text-rose-600 dark:text-rose-400 mb-4">{hotelsError}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="py-2.5 px-5 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white transition-colors"
+            >
+              Retry Connection
+            </button>
+          </div>
+        ) : filteredHotels.length === 0 ? (
           <div className="glass-card p-12 rounded-3xl border border-slate-200 dark:border-[var(--border-subtle)] text-center max-w-md mx-auto shadow-sm">
             <HotelIcon className="w-12 h-12 text-slate-400 mx-auto mb-3" />
             <h3 className="text-lg font-sans font-bold text-[var(--text)] dark:text-white mb-1">No Sanctuaries Found</h3>

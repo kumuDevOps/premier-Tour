@@ -3,6 +3,7 @@ import { dataService } from '../../services/dataService';
 import { Plus, Edit2, Trash2 } from 'lucide-react';
 import { Hotel } from '../../types';
 import { HotelFormModal } from './HotelFormModal';
+import { getImageUrl } from '../../utils/imageUrl';
 
 export const HotelManager = () => {
   const [hotels, setHotels] = useState<Hotel[]>([]);
@@ -73,17 +74,27 @@ export const HotelManager = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-                {hotels.map(hotel => {
+                {hotels.map((hotel, idx) => {
+                  const hotelId = hotel.id || (hotel as any)._id || hotel.package_code || `hotel-${idx}`;
                   const title = hotel.name || hotel.title || 'Luxury Hotel';
                   const loc = hotel.location || hotel.city || 'Sri Lanka';
-                  const img = hotel.image_urls?.[0] || hotel.image_url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945';
-                  const price = hotel.price_per_night || hotel.price || 0;
+                  const rawImg = hotel.image_urls?.[0] || hotel.image_url;
+                  const img = getImageUrl(rawImg, undefined, `${title} ${loc} hotel resort`);
+                  const rawPrice = hotel.price_per_night ?? hotel.price;
+                  const price = typeof rawPrice === 'object' && rawPrice !== null ? Number((rawPrice as any).amount || 0) : Number(rawPrice || 0);
 
                   return (
-                    <tr key={hotel.id} className="hover:bg-[var(--background)] dark:hover:bg-slate-800/20 transition-colors">
+                    <tr key={hotelId} className="hover:bg-[var(--background)] dark:hover:bg-slate-800/20 transition-colors">
                       <td className="p-4">
                         <div className="flex items-center gap-3">
-                          <img src={img} alt="" className="w-10 h-10 rounded-lg object-cover bg-slate-100" />
+                          <img
+                            src={img}
+                            alt={title}
+                            className="w-10 h-10 rounded-lg object-cover bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=300&q=80';
+                            }}
+                          />
                           <div>
                             <p className="font-bold text-sm text-[var(--text)] dark:text-white">{title}</p>
                             <p className="text-[10px] text-[var(--muted)] truncate max-w-[200px]">{loc}</p>
@@ -99,7 +110,7 @@ export const HotelManager = () => {
                           <button onClick={() => { setEditingHotel(hotel); setIsModalOpen(true); }} className="p-1.5 text-slate-400 hover:text-[var(--primary)] transition-colors" title="Edit">
                             <Edit2 className="w-4 h-4" />
                           </button>
-                          <button onClick={() => handleDelete(hotel.id)} className="p-1.5 text-slate-400 hover:text-rose-500 transition-colors" title="Delete">
+                          <button onClick={() => handleDelete(hotelId)} className="p-1.5 text-slate-400 hover:text-rose-500 transition-colors" title="Delete">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </div>

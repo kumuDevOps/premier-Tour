@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { dataService } from '../../services/dataService';
-import { X, Save, Trash2 } from 'lucide-react';
+import { X, Save, Trash2, Loader2, CheckCircle2 } from 'lucide-react';
 import { Tour } from '../../types';
 import { ImageUploadField } from './ImageUploadField';
 
@@ -38,36 +38,71 @@ export const TourFormModal: React.FC<TourFormModalProps> = ({ tour, onClose, onS
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(existingImg || null);
   const [loading, setLoading] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<string>('');
   const [error, setError] = useState('');
+
+  // Clean up any temporary blob URLs to avoid memory leaks
+  useEffect(() => {
+    return () => {
+      if (previewUrl && previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
+
     setLoading(true);
     setError('');
 
     try {
-      await dataService.saveTour(
-        {
-          ...formData,
-          id: tour?.id || formData.id,
-          title: formData.title || 'Signature Ceylon Heritage Tour',
-          category: formData.category || 'Cultural Expedition',
-          location: formData.location || 'Sri Lanka',
-          price: Number(formData.price || 450),
-          duration_days: Number(formData.duration_days || 3),
-          duration: `${formData.duration_days || 3} Days / ${(formData.duration_days || 3) - 1} Nights`,
-          image_url: existingImg && !selectedFile && previewUrl ? existingImg : (formData.image_url || ''),
-        },
-        selectedFile
-      );
-      onSaved();
-      onClose();
+      if (selectedFile) {
+        setStatusMessage('Uploading image...');
+      } else {
+        setStatusMessage('Saving tour...');
+      }
+
+      const payload = {
+        ...formData,
+        id: tour?.id || formData.id,
+        title: formData.title || 'Signature Ceylon Heritage Tour',
+        category: formData.category || 'Cultural Expedition',
+        location: formData.location || 'Sri Lanka',
+        price: Number(formData.price || 450),
+        duration_days: Number(formData.duration_days || 3),
+        duration: `${formData.duration_days || 3} Days / ${Math.max(1, (formData.duration_days || 3) - 1)} Nights`,
+        // If an existing image exists and no new file was selected, preserve the existing image
+        image_url: existingImg && !selectedFile && previewUrl ? existingImg : (formData.image_url || ''),
+      };
+
+      if (selectedFile) {
+        setStatusMessage('Uploading image...');
+      }
+
+      await dataService.saveTour(payload, selectedFile);
+
+      setStatusMessage('Tour saved successfully!');
+      setTimeout(() => {
+        onSaved();
+        onClose();
+      }, 500);
     } catch (err: any) {
       console.error('Save tour form error:', err);
-      setError(err?.message || "Failed to save tour package.");
-    } finally {
+      setError(err?.message || 'Failed to save tour package. Please try again.');
       setLoading(false);
+      setStatusMessage('');
     }
+  };
+
+  const handleClearImage = () => {
+    if (previewUrl && previewUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    setFormData({ ...formData, image_urls: [], image_url: '' });
   };
 
   return (
@@ -80,17 +115,25 @@ export const TourFormModal: React.FC<TourFormModalProps> = ({ tour, onClose, onS
             </h2>
             <p className="text-xs text-[var(--muted)] mt-0.5">Publish live tour itineraries to catalog with media assets</p>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full text-[var(--muted)] transition-colors">
+          <button onClick={onClose} disabled={loading} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full text-[var(--muted)] transition-colors disabled:opacity-50">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <div className="p-6 overflow-y-auto flex-1">
           {error && (
-            <div className="mb-4 p-3 bg-rose-50 text-rose-600 rounded-xl text-sm font-medium border border-rose-200">
+            <div className="mb-4 p-3.5 bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-300 rounded-xl text-sm font-medium border border-rose-200 dark:border-rose-800">
               {error}
             </div>
           )}
+
+          {statusMessage && loading && (
+            <div className="mb-4 p-3 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 rounded-xl text-sm font-medium border border-emerald-200 dark:border-emerald-800 flex items-center gap-2">
+              <Loader2 className="w-4 h-4 animate-spin text-emerald-600 dark:text-emerald-400" />
+              <span>{statusMessage}</span>
+            </div>
+          )}
+
           <form id="tour-form" onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -98,10 +141,11 @@ export const TourFormModal: React.FC<TourFormModalProps> = ({ tour, onClose, onS
                 <input 
                   required 
                   type="text" 
+                  disabled={loading}
                   value={formData.title || ''} 
                   onChange={e => setFormData({...formData, title: e.target.value})} 
                   placeholder="e.g. Ella Scenic Mist & Mountain Train Journey"
-                  className="w-full mt-1 p-2.5 rounded-xl border border-slate-200 dark:border-[var(--border-subtle)] bg-[var(--background)] dark:bg-[var(--surface)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] dark:text-white" 
+                  className="w-full mt-1 p-2.5 rounded-xl border border-slate-200 dark:border-[var(--border-subtle)] bg-[var(--background)] dark:bg-[var(--surface)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] dark:text-white disabled:opacity-60" 
                 />
               </div>
               <div>
@@ -109,10 +153,11 @@ export const TourFormModal: React.FC<TourFormModalProps> = ({ tour, onClose, onS
                 <input 
                   required 
                   type="text" 
+                  disabled={loading}
                   value={formData.category || ''} 
                   onChange={e => setFormData({...formData, category: e.target.value})} 
                   placeholder="e.g. Wildlife Safari & Nature"
-                  className="w-full mt-1 p-2.5 rounded-xl border border-slate-200 dark:border-[var(--border-subtle)] bg-[var(--background)] dark:bg-[var(--surface)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] dark:text-white" 
+                  className="w-full mt-1 p-2.5 rounded-xl border border-slate-200 dark:border-[var(--border-subtle)] bg-[var(--background)] dark:bg-[var(--surface)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] dark:text-white disabled:opacity-60" 
                 />
               </div>
               <div>
@@ -121,10 +166,11 @@ export const TourFormModal: React.FC<TourFormModalProps> = ({ tour, onClose, onS
                   required 
                   type="number" 
                   min="0" 
+                  disabled={loading}
                   value={formData.price || ''} 
                   onChange={e => setFormData({...formData, price: Number(e.target.value)})} 
                   placeholder="450"
-                  className="w-full mt-1 p-2.5 rounded-xl border border-slate-200 dark:border-[var(--border-subtle)] bg-[var(--background)] dark:bg-[var(--surface)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] dark:text-white" 
+                  className="w-full mt-1 p-2.5 rounded-xl border border-slate-200 dark:border-[var(--border-subtle)] bg-[var(--background)] dark:bg-[var(--surface)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] dark:text-white disabled:opacity-60" 
                 />
               </div>
               <div>
@@ -133,10 +179,11 @@ export const TourFormModal: React.FC<TourFormModalProps> = ({ tour, onClose, onS
                   required 
                   type="number" 
                   min="1" 
+                  disabled={loading}
                   value={formData.duration_days || ''} 
                   onChange={e => setFormData({...formData, duration_days: Number(e.target.value)})} 
                   placeholder="3"
-                  className="w-full mt-1 p-2.5 rounded-xl border border-slate-200 dark:border-[var(--border-subtle)] bg-[var(--background)] dark:bg-[var(--surface)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] dark:text-white" 
+                  className="w-full mt-1 p-2.5 rounded-xl border border-slate-200 dark:border-[var(--border-subtle)] bg-[var(--background)] dark:bg-[var(--surface)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] dark:text-white disabled:opacity-60" 
                 />
               </div>
               <div className="md:col-span-2">
@@ -144,10 +191,11 @@ export const TourFormModal: React.FC<TourFormModalProps> = ({ tour, onClose, onS
                 <input 
                   required 
                   type="text" 
+                  disabled={loading}
                   value={formData.location || ''} 
                   onChange={e => setFormData({...formData, location: e.target.value})} 
                   placeholder="e.g. Sigiriya & Cultural Triangle, Sri Lanka"
-                  className="w-full mt-1 p-2.5 rounded-xl border border-slate-200 dark:border-[var(--border-subtle)] bg-[var(--background)] dark:bg-[var(--surface)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] dark:text-white" 
+                  className="w-full mt-1 p-2.5 rounded-xl border border-slate-200 dark:border-[var(--border-subtle)] bg-[var(--background)] dark:bg-[var(--surface)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] dark:text-white disabled:opacity-60" 
                 />
               </div>
               <div className="md:col-span-2">
@@ -155,10 +203,11 @@ export const TourFormModal: React.FC<TourFormModalProps> = ({ tour, onClose, onS
                 <textarea 
                   rows={4} 
                   required 
+                  disabled={loading}
                   value={formData.description || ''} 
                   onChange={e => setFormData({...formData, description: e.target.value})} 
                   placeholder="Detailed highlights, day-by-day expedition route, and luxury features..."
-                  className="w-full mt-1 p-2.5 rounded-xl border border-slate-200 dark:border-[var(--border-subtle)] bg-[var(--background)] dark:bg-[var(--surface)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] dark:text-white" 
+                  className="w-full mt-1 p-2.5 rounded-xl border border-slate-200 dark:border-[var(--border-subtle)] bg-[var(--background)] dark:bg-[var(--surface)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] dark:text-white disabled:opacity-60" 
                 />
               </div>
               <div className="md:col-span-2">
@@ -177,12 +226,9 @@ export const TourFormModal: React.FC<TourFormModalProps> = ({ tour, onClose, onS
                       <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
                         <button 
                           type="button" 
-                          onClick={() => {
-                            setSelectedFile(null);
-                            setPreviewUrl(null);
-                            setFormData({...formData, image_urls: [], image_url: ''});
-                          }}
-                          className="bg-rose-500 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-rose-600 shadow-lg cursor-pointer"
+                          disabled={loading}
+                          onClick={handleClearImage}
+                          className="bg-rose-500 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-rose-600 shadow-lg cursor-pointer disabled:opacity-50"
                         >
                           <Trash2 className="w-4 h-4" /> Replace Image
                         </button>
@@ -195,15 +241,15 @@ export const TourFormModal: React.FC<TourFormModalProps> = ({ tour, onClose, onS
                       tourId={tour?.id || formData.id}
                       previewUrl={previewUrl}
                       onFileSelected={(file) => {
+                        if (previewUrl && previewUrl.startsWith('blob:')) {
+                          URL.revokeObjectURL(previewUrl);
+                        }
                         setSelectedFile(file);
-                        setPreviewUrl(URL.createObjectURL(file));
+                        const objUrl = URL.createObjectURL(file);
+                        setPreviewUrl(objUrl);
                         setError('');
                       }}
-                      onClear={() => {
-                        setSelectedFile(null);
-                        setPreviewUrl(null);
-                        setFormData({...formData, image_urls: [], image_url: ''});
-                      }}
+                      onClear={handleClearImage}
                       onError={(msg) => setError(msg)} 
                     />
                   )}
@@ -214,12 +260,21 @@ export const TourFormModal: React.FC<TourFormModalProps> = ({ tour, onClose, onS
         </div>
 
         <div className="p-6 border-t border-slate-200 dark:border-[var(--border-subtle)] flex justify-end gap-3 shrink-0">
-          <button type="button" onClick={onClose} className="px-5 py-2.5 text-sm font-bold text-[var(--muted)] hover:bg-slate-100 dark:text-[var(--text-secondary)] dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer">
+          <button type="button" onClick={onClose} disabled={loading} className="px-5 py-2.5 text-sm font-bold text-[var(--muted)] hover:bg-slate-100 dark:text-[var(--text-secondary)] dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer disabled:opacity-50">
             Cancel
           </button>
           <button form="tour-form" type="submit" disabled={loading} className="px-5 py-2.5 text-sm font-bold text-white bg-[var(--primary)] hover:bg-[var(--primary-dark)] disabled:opacity-50 disabled:cursor-not-allowed rounded-xl flex items-center gap-2 transition-colors shadow-sm cursor-pointer">
-            <Save className="w-4 h-4" />
-            {loading ? 'Saving...' : (tour ? 'Update Tour' : 'Create Tour')}
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                {statusMessage || 'Saving tour...'}
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4" />
+                {tour ? 'Update Tour' : 'Create Tour'}
+              </>
+            )}
           </button>
         </div>
       </div>

@@ -29,27 +29,85 @@ export const getCars = async (req: Request, res: Response) => {
 
 export const saveCar = async (req: Request, res: Response) => {
   try {
-    const { id, name, category, pricePerDay, currency, seats, luggage, transmission, fuelType, rating, imageUrl, description, features, available } = req.body;
+    const {
+      id,
+      _id,
+      name,
+      vehicle_name,
+      title,
+      category,
+      vehicle_type,
+      pricePerDay,
+      price_per_day,
+      daily_rate,
+      daily_rate_self_drive,
+      price,
+      currency,
+      seats,
+      seating_capacity,
+      luggage,
+      luggage_capacity,
+      transmission,
+      fuelType,
+      fuel_type,
+      rating,
+      imageUrl,
+      image_url,
+      imageUrls,
+      image_urls,
+      description,
+      features,
+      available,
+    } = req.body;
+
+    const carId = id || _id;
+    const carName = name || vehicle_name || title || 'Comfort Vehicle';
+
+    // Extract image URL
+    let foundImg = '';
+    if (imageUrl && typeof imageUrl === 'string' && !imageUrl.startsWith('blob:')) {
+      foundImg = imageUrl.trim();
+    } else if (image_url && typeof image_url === 'string' && !image_url.startsWith('blob:')) {
+      foundImg = image_url.trim();
+    } else if (Array.isArray(imageUrls) && imageUrls[0] && !String(imageUrls[0]).startsWith('blob:')) {
+      foundImg = String(imageUrls[0]).trim();
+    } else if (Array.isArray(image_urls) && image_urls[0] && !String(image_urls[0]).startsWith('blob:')) {
+      foundImg = String(image_urls[0]).trim();
+    }
+
+    let existingCar: any = null;
+    if (carId && String(carId).match(/^[0-9a-fA-F]{24}$/)) {
+      existingCar = await Car.findById(carId);
+    }
+
+    if (!foundImg && existingCar && existingCar.imageUrl) {
+      foundImg = existingCar.imageUrl;
+    }
+    if (!foundImg) {
+      foundImg = 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341';
+    }
+
+    const numRate = Number(pricePerDay ?? price_per_day ?? daily_rate ?? daily_rate_self_drive ?? price ?? 75);
 
     const payload: any = {
-      name: name || 'Comfort Vehicle',
-      category: category || 'Comfort SUV',
-      pricePerDay: Number(pricePerDay || 75),
+      name: carName,
+      category: category || vehicle_type || 'Comfort SUV',
+      pricePerDay: numRate,
       currency: currency || 'USD',
-      seats: Number(seats || 4),
-      luggage: Number(luggage || 3),
+      seats: Number(seats ?? seating_capacity ?? 4),
+      luggage: Number(luggage ?? luggage_capacity ?? 3),
       transmission: transmission || 'Automatic',
-      fuelType: fuelType || 'Hybrid / Petrol',
+      fuelType: fuelType || fuel_type || 'Hybrid / Petrol',
       rating: Number(rating || 5.0),
-      imageUrl: imageUrl || '/assets/fallback/default-travel.webp',
+      imageUrl: foundImg,
       description: description || '',
-      features: features || [],
+      features: Array.isArray(features) ? features : [],
       available: available !== undefined ? Boolean(available) : true,
     };
 
     let car;
-    if (id && id.match(/^[0-9a-fA-F]{24}$/)) {
-      car = await Car.findByIdAndUpdate(id, payload, { new: true });
+    if (carId && String(carId).match(/^[0-9a-fA-F]{24}$/)) {
+      car = await Car.findByIdAndUpdate(carId, payload, { new: true });
     } else {
       car = await Car.create(payload);
     }

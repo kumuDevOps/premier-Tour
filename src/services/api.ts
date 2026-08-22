@@ -37,20 +37,23 @@ const getHeaders = (includeAuth = true, isJson = true): HeadersInit => {
 async function safeFetch<T = any>(url: string, options?: RequestInit): Promise<ApiResponse<T>> {
   try {
     const res = await fetch(url, options);
-    const contentType = res.headers.get('content-type') || '';
+    const rawText = await res.text();
     
-    if (contentType.includes('application/json')) {
-      const json = await res.json();
+    // Safely parse JSON from response text
+    try {
+      const json = JSON.parse(rawText);
       return json;
+    } catch {
+      // Server returned HTML or non-JSON text (e.g. 404, 500 error page)
+      const cleanSnippet = rawText.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 120);
+      return {
+        success: false,
+        error: res.ok 
+          ? 'Server returned an invalid non-JSON response.' 
+          : `Server request failed (HTTP ${res.status})${cleanSnippet ? `: ${cleanSnippet}` : ''}`,
+        message: `Request failed with HTTP ${res.status}`,
+      };
     }
-
-    // Server returned HTML or text (e.g. 404, 500 error page)
-    const text = await res.text();
-    return {
-      success: false,
-      error: `Server returned non-JSON response (${res.status}): ${text.slice(0, 120)}...`,
-      message: `Request failed with HTTP ${res.status}`,
-    };
   } catch (err: any) {
     return {
       success: false,
@@ -73,8 +76,9 @@ export const api = {
         const formData = new FormData();
         formData.append('folder', folder);
         formData.append('image', file);
+        formData.append('file', file);
 
-        const token = localStorage.getItem('pt_auth_token');
+        const token = localStorage.getItem('pt_auth_token') || localStorage.getItem('sb-auth-token');
         const headers: HeadersInit = {};
         if (token) {
           headers['Authorization'] = `Bearer ${token}`;
@@ -86,17 +90,17 @@ export const api = {
           body: formData,
         });
 
-        const contentType = res.headers.get('content-type') || '';
-        if (!contentType.includes('application/json')) {
-          const text = await res.text();
+        const rawText = await res.text();
+        try {
+          const json = JSON.parse(rawText);
+          return json;
+        } catch {
+          const cleanSnippet = rawText.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 120);
           return {
             success: false,
-            error: `Upload server returned non-JSON (${res.status}): ${text.slice(0, 100)}`,
+            error: `Upload server returned HTTP ${res.status}${cleanSnippet ? `: ${cleanSnippet}` : ''}`,
           };
         }
-
-        const data = await res.json();
-        return data;
       } catch (err: any) {
         return {
           success: false,
@@ -254,6 +258,13 @@ export const api = {
         method: 'POST',
         headers: getHeaders(true),
         body: JSON.stringify(payload),
+      });
+    },
+
+    delete: async (id: string): Promise<ApiResponse> => {
+      return safeFetch(`${API_BASE}/flights/${id}`, {
+        method: 'DELETE',
+        headers: getHeaders(true),
       });
     },
   },

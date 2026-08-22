@@ -33,7 +33,7 @@ export const ToursPage: React.FC = () => {
   const { t, isRTL } = useLanguage();
   const { localizeTours, localizeCategory } = useLocalizedContent();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { data: rawTours, loading: loadingTours } = useCatalogData<Tour>('tours', []);
+  const { data: rawTours, loading: loadingTours, error: toursError } = useCatalogData<Tour>('tours', []);
   const tours = React.useMemo(() => localizeTours(rawTours), [rawTours, localizeTours]);
   const [filteredTours, setFilteredTours] = useState<Tour[]>([]);
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
@@ -64,16 +64,20 @@ export const ToursPage: React.FC = () => {
       const term = searchTerm.toLowerCase();
       result = result.filter(
         (t) =>
-          t.title.toLowerCase().includes(term) ||
-          t.location.toLowerCase().includes(term) ||
-          t.description.toLowerCase().includes(term) ||
+          (t.title && t.title.toLowerCase().includes(term)) ||
+          (t.location && t.location.toLowerCase().includes(term)) ||
+          (t.description && t.description.toLowerCase().includes(term)) ||
           (t.highlights && t.highlights.some((h) => h.toLowerCase().includes(term)))
       );
     }
 
-    // Category filter
+    // Category filter (flexible substring & case-insensitive matching)
     if (category !== 'All') {
-      result = result.filter((t) => t.category.toLowerCase() === category.toLowerCase());
+      const catLower = category.toLowerCase();
+      result = result.filter((t) => {
+        const tourCat = (t.category || '').toLowerCase();
+        return tourCat.includes(catLower) || catLower.includes(tourCat);
+      });
     }
 
     // Guests filter (make sure group size fits)
@@ -84,16 +88,19 @@ export const ToursPage: React.FC = () => {
       }
     }
 
-    // Price filter
-    result = result.filter((t) => t.price <= maxPrice);
+    // Price filter (defensive against any non-numeric types)
+    result = result.filter((t) => {
+      const p = typeof t.price === 'number' ? t.price : 450;
+      return p <= maxPrice;
+    });
 
     // Sorting
     if (sortBy === 'price-asc') {
-      result.sort((a, b) => a.price - b.price);
+      result.sort((a, b) => (a.price || 0) - (b.price || 0));
     } else if (sortBy === 'price-desc') {
-      result.sort((a, b) => b.price - a.price);
+      result.sort((a, b) => (b.price || 0) - (a.price || 0));
     } else if (sortBy === 'rating') {
-      result.sort((a, b) => b.rating - a.rating);
+      result.sort((a, b) => (b.rating || 0) - (a.rating || 0));
     }
 
     setFilteredTours(result);
@@ -294,8 +301,30 @@ export const ToursPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Tours Grid */}
-        {filteredTours.length === 0 ? (
+        {/* Tours Grid / Loading / Error / Empty States */}
+        {loadingTours ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
+            {[1, 2, 3, 4, 5, 6].map((n) => (
+              <div key={n} className="rounded-3xl bg-white dark:bg-[#073126] p-4 border border-slate-200 dark:border-emerald-950/40 animate-pulse">
+                <div className="h-56 bg-slate-200 dark:bg-emerald-900/30 rounded-2xl mb-4" />
+                <div className="h-4 bg-slate-200 dark:bg-emerald-900/30 rounded w-1/3 mb-2" />
+                <div className="h-6 bg-slate-200 dark:bg-emerald-900/30 rounded w-3/4 mb-4" />
+                <div className="h-4 bg-slate-200 dark:bg-emerald-900/30 rounded w-1/2" />
+              </div>
+            ))}
+          </div>
+        ) : toursError ? (
+          <div className="bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 p-8 rounded-3xl text-center max-w-lg mx-auto shadow-sm">
+            <h3 className="text-lg font-bold text-rose-800 dark:text-rose-300 mb-2">Unable to Load Expeditions</h3>
+            <p className="text-xs text-rose-600 dark:text-rose-400 mb-4">{toursError}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="py-2.5 px-5 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white transition-colors"
+            >
+              Retry Connection
+            </button>
+          </div>
+        ) : filteredTours.length === 0 ? (
           <div className="bg-white dark:bg-[#073126] p-12 rounded-3xl border border-[#10B981]/20 text-center max-w-md mx-auto shadow-sm">
             <Compass className="w-12 h-12 text-slate-400 mx-auto mb-3" />
             <h3 className="text-lg font-sans font-bold text-[var(--text)] dark:text-white mb-1">{t('tours_no_results') || 'No Expeditions Found'}</h3>

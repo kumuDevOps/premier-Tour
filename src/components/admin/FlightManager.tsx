@@ -83,7 +83,8 @@ export const FlightManager = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-                {flights.map(flight => {
+                {flights.map((flight, idx) => {
+                  const flightId = flight.id || (flight as any)._id || flight.package_code || `flight-${idx}`;
                   const fullAirline = flight.airline || flight.airline_name || flight.title || 'Aviation Service';
                   // Extract airline and flight number if combined
                   const fnMatch = fullAirline.match(/\(([^)]+)\)/);
@@ -103,10 +104,11 @@ export const FlightManager = () => {
                   }
                   
                   const stops = flight.cabin_class || 'Direct';
-                  const fare = Number(flight.price || flight.base_price || 560);
+                  const rawFare = flight.price ?? flight.base_price ?? (flight as any).fare;
+                  const fare = typeof rawFare === 'object' && rawFare !== null ? Number((rawFare as any).amount || 560) : Number(rawFare || 560);
 
                   return (
-                    <tr key={flight.id} className="hover:bg-[var(--background)] dark:hover:bg-slate-800/20 transition-colors">
+                    <tr key={flightId} className="hover:bg-[var(--background)] dark:hover:bg-slate-800/20 transition-colors">
                       <td className="p-4 font-bold text-sm text-[var(--text)] dark:text-white flex items-center gap-2">
                         <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-[#031812]/40 flex items-center justify-center shrink-0">
                           <Plane className="w-4 h-4 text-[var(--primary)]" />
@@ -131,7 +133,7 @@ export const FlightManager = () => {
                           <button onClick={() => { setEditingFlight(flight); setIsModalOpen(true); }} className="p-1.5 text-slate-400 hover:text-[var(--primary)] transition-colors" title="Edit Flight">
                             <Edit2 className="w-4 h-4" />
                           </button>
-                          <button onClick={() => handleDelete(flight.id)} className="p-1.5 text-slate-400 hover:text-rose-500 transition-colors" title="Delete Flight">
+                          <button onClick={() => handleDelete(flightId)} className="p-1.5 text-slate-400 hover:text-rose-500 transition-colors" title="Delete Flight">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </div>

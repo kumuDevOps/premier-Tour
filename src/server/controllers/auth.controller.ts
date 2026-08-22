@@ -3,9 +3,8 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/User';
 import { AuthenticatedRequest } from '../middleware/auth';
+import { JWT_SECRET, JWT_EXPIRES_IN } from '../config/jwt';
 
-const JWT_SECRET = process.env.JWT_ACCESS_SECRET || 'premier_tours_jwt_secret_key_2026_production_safe';
-const JWT_EXPIRES_IN = '7d';
 
 export const register = async (req: AuthenticatedRequest, res: Response) => {
   try {

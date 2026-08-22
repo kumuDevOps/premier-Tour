@@ -3,6 +3,7 @@ import { dataService } from '../../services/dataService';
 import { Plus, Edit2, Trash2 } from 'lucide-react';
 import { Car } from '../../types';
 import { CarFormModal } from './CarFormModal';
+import { getImageUrl } from '../../utils/imageUrl';
 
 export const CarManager = () => {
   const [cars, setCars] = useState<Car[]>([]);
@@ -75,17 +76,27 @@ export const CarManager = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-                {cars.map(car => {
+                {cars.map((car, idx) => {
+                  const carId = car.id || (car as any)._id || car.package_code || `car-${idx}`;
                   const title = car.vehicle_name || car.name || 'Executive Vehicle';
                   const type = car.vehicle_type || car.category || 'Executive Sedan';
-                  const img = car.image_urls?.[0] || car.image_url || 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341';
-                  const price = car.daily_rate || car.daily_rate_self_drive || 120;
+                  const rawImg = car.image_urls?.[0] || car.image_url;
+                  const img = getImageUrl(rawImg, undefined, `${title} ${type} car vehicle`);
+                  const rawPrice = car.daily_rate || car.daily_rate_self_drive;
+                  const price = typeof rawPrice === 'object' && rawPrice !== null ? Number((rawPrice as any).amount || 120) : Number(rawPrice || 120);
 
                   return (
-                    <tr key={car.id} className="hover:bg-[var(--background)] dark:hover:bg-slate-800/20 transition-colors">
+                    <tr key={carId} className="hover:bg-[var(--background)] dark:hover:bg-slate-800/20 transition-colors">
                       <td className="p-4">
                         <div className="flex items-center gap-3">
-                          <img src={img} alt="" className="w-10 h-10 rounded-lg object-cover bg-slate-100" />
+                          <img
+                            src={img}
+                            alt={title}
+                            className="w-10 h-10 rounded-lg object-cover bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=300&q=80';
+                            }}
+                          />
                           <div>
                             <p className="font-bold text-sm text-[var(--text)] dark:text-white">{title}</p>
                             <p className="text-[10px] text-[var(--muted)] truncate max-w-[200px]">{car.seats || 4} Seats • {car.transmission || 'Automatic'}</p>
@@ -101,7 +112,7 @@ export const CarManager = () => {
                           <button onClick={() => { setEditingCar(car); setIsModalOpen(true); }} className="p-1.5 text-slate-400 hover:text-[var(--primary)] transition-colors" title="Edit">
                             <Edit2 className="w-4 h-4" />
                           </button>
-                          <button onClick={() => handleDelete(car.id)} className="p-1.5 text-slate-400 hover:text-rose-500 transition-colors" title="Delete">
+                          <button onClick={() => handleDelete(carId)} className="p-1.5 text-slate-400 hover:text-rose-500 transition-colors" title="Delete">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </div>

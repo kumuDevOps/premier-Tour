@@ -29,7 +29,7 @@ export const FlightsPage: React.FC = () => {
   const { formatPrice } = useCurrency();
   const { t } = useLanguage();
   const { localizeFlights } = useLocalizedContent();
-  const { data: rawFlights, loading } = useCatalogData<Flight>('flights', []);
+  const { data: rawFlights, loading, error: flightsError } = useCatalogData<Flight>('flights', []);
   const flights = React.useMemo(() => localizeFlights(rawFlights), [rawFlights, localizeFlights]);
 
   const [fromAirport, setFromAirport] = useState<string>(searchParams.get('from') || '');
@@ -242,6 +242,17 @@ export const FlightsPage: React.FC = () => {
             {[1, 2, 3, 4, 5].map((i) => (
               <div key={i} className="glass-card rounded-2xl h-36 animate-pulse border border-slate-200 dark:border-[var(--border-subtle)]" />
             ))}
+          </div>
+        ) : flightsError ? (
+          <div className="bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 p-8 rounded-3xl text-center max-w-lg mx-auto shadow-sm">
+            <h3 className="text-lg font-bold text-rose-800 dark:text-rose-300 mb-2">Unable to Load Flight Schedules</h3>
+            <p className="text-xs text-rose-600 dark:text-rose-400 mb-4">{flightsError}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="py-2.5 px-5 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white transition-colors"
+            >
+              Retry Connection
+            </button>
           </div>
         ) : filteredFlights.length === 0 ? (
           <div className="py-16 text-center glass-card rounded-3xl border border-slate-200 dark:border-[var(--border-subtle)]">

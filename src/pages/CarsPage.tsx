@@ -28,7 +28,7 @@ export const CarsPage: React.FC = () => {
   const { formatPrice } = useCurrency();
   const { t } = useLanguage();
   const { localizeCars } = useLocalizedContent();
-  const { data: rawCars, loading } = useCatalogData<Car>("cars", []);
+  const { data: rawCars, loading, error: carsError } = useCatalogData<Car>("cars", []);
   const cars = React.useMemo(() => localizeCars(rawCars), [rawCars, localizeCars]);
   
   const [selectedCategory, setSelectedCategory] = useState<string>(searchParams.get('category') || 'All');
@@ -50,8 +50,10 @@ export const CarsPage: React.FC = () => {
   const categories = ['All', 'Luxury Sedan', 'Premium SUV', 'Passenger Van (KDH)', 'Mini Coach VIP'];
 
   const filteredCars = cars.filter((car) => {
-    if (selectedCategory !== 'All' && car.category !== selectedCategory) {
-      return false;
+    if (selectedCategory !== 'All') {
+      const selected = selectedCategory.toLowerCase();
+      const carCat = (car.category || car.vehicle_type || '').toLowerCase();
+      return carCat.includes(selected) || selected.includes(carCat);
     }
     return true;
   });
@@ -193,6 +195,17 @@ export const CarsPage: React.FC = () => {
             {[1, 2, 3].map((i) => (
               <div key={i} className="glass-card rounded-3xl h-96 animate-pulse border border-slate-200 dark:border-[var(--border-subtle)]" />
             ))}
+          </div>
+        ) : carsError ? (
+          <div className="col-span-full py-12 px-6 text-center bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 rounded-3xl max-w-lg mx-auto">
+            <h3 className="text-lg font-bold text-rose-800 dark:text-rose-300 mb-2">Unable to Load Fleet</h3>
+            <p className="text-xs text-rose-600 dark:text-rose-400 mb-4">{carsError}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="py-2.5 px-5 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white transition-colors"
+            >
+              Retry Connection
+            </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">

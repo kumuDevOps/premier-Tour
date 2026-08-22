@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { UploadCloud, X, Image as ImageIcon, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { api } from '../../services/api';
 
 interface ImageUploadFieldProps {
   bucket?: string;
@@ -81,6 +82,15 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
     if (onUploadSuccess) {
       setUploading(true);
       try {
+        const uploadRes = await api.upload.uploadImage(file, folder || 'general');
+        if (uploadRes.success && (uploadRes.url || uploadRes.data?.imageUrl)) {
+          const finalUrl = uploadRes.url || uploadRes.data?.imageUrl || '';
+          setInternalPreview(finalUrl);
+          onUploadSuccess(finalUrl);
+          return;
+        }
+
+        // Resilient fallback to self-contained Base64
         const fileData = await new Promise<string>((resolve, reject) => {
           const reader = new FileReader();
           reader.onloadend = () => resolve(reader.result as string);
@@ -88,31 +98,6 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
           reader.readAsDataURL(file);
         });
 
-        try {
-          const res = await fetch('/api/upload', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              fileData,
-              fileName: file.name,
-              contentType: file.type,
-              bucket,
-              folder,
-              id: tourId || 'general',
-            }),
-          });
-
-          const data = await res.json();
-          if (res.ok && data.success && data.url) {
-            setInternalPreview(data.url);
-            onUploadSuccess(data.url);
-            return;
-          }
-        } catch (fetchErr) {
-          console.warn('Direct upload fetch notice, falling back to data URL:', fetchErr);
-        }
-
-        // Resilient fallback to self-contained Base64
         setInternalPreview(fileData);
         onUploadSuccess(fileData);
       } catch (err: any) {
