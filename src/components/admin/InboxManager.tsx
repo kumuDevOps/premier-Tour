@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { dataService } from '../../lib/supabase';
+import { dataService } from '../../services/dataService';
 import { Inbox, Mail, Phone, Calendar, CheckCircle2, Clock, Trash2, Search, Send, X, MessageSquare, AlertCircle } from 'lucide-react';
 
 interface Inquiry {

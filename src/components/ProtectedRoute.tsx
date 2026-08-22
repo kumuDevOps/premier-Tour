@@ -9,12 +9,12 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin = false }) => {
-  const { user, isAdmin, role, isLoading } = useAuth();
+  const { user, isAdmin, role, loading } = useAuth();
   const location = useLocation();
 
   console.log("PROTECTED ROUTE VERIFICATION:", {
     pathname: location.pathname,
-    isLoading,
+    loading,
     authUserId: user?.id,
     authUserEmail: user?.email,
     profileRole: user?.role,
@@ -23,8 +23,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requir
     requireAdmin
   });
 
-  // 1. Show loading state while Supabase session and user profile are resolving
-  if (isLoading) {
+  // 1. Show loading state while session and user profile are resolving
+  if (loading) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 bg-[var(--background)] dark:bg-[var(--background)] text-[var(--text)] dark:text-[var(--text)]">
         <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[var(--primary)] to-emerald-700 text-white flex items-center justify-center shadow-lg shadow-emerald-950/40 animate-pulse mb-4">

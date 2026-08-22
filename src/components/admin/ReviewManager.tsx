@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase, isSupabaseConfigured, dataService } from '../../lib/supabase';
+import { dataService } from '../../services/dataService';
 import { 
   Star, CheckCircle2, XCircle, Clock, Trash2, 
   MessageSquare, User, Filter, AlertCircle, Edit

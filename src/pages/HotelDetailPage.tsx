@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useLocalizedContent } from '../hooks/useLocalizedContent';
 import { Hotel } from '../types';
-import { dataService } from '../lib/supabase';
+import { dataService } from '../services/dataService';
 import { SEOHelmet } from '../components/SEOHelmet';
 import { SafeImage } from '../components/ui/SafeImage';
 import { useCurrency } from '../context/CurrencyContext';

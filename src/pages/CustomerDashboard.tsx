@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../context/AuthContext';
 import { Booking, Review } from '../types';
-import { dataService } from '../lib/supabase';
+import { dataService } from '../services/dataService';
 import { SEOHelmet } from '../components/SEOHelmet';
 import { ReceiptUpload } from '../components/ReceiptUpload';
 import { BookingVoucherModal } from '../components/BookingVoucherModal';
@@ -54,7 +54,7 @@ export const CustomerDashboard: React.FC = () => {
     try {
       setFetchError(null);
       const [bookingsData, reviewsData] = await Promise.all([
-        dataService.getBookings(user.id, 'user'),
+        dataService.getBookings(user.id),
         dataService.getReviews('user', user.id),
       ]);
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { supabase, isSupabaseConfigured, dataService } from '../../lib/supabase';
+import { dataService } from '../../services/dataService';
+import { api } from '../../services/api';
 import { 
   CalendarCheck, Clock, CheckCircle2, XCircle, Search, 
   Filter, Eye, FileText, User, Mail, Phone, DollarSign, Download, RefreshCw
@@ -18,7 +19,7 @@ export const BookingManager: React.FC = () => {
   const fetchBookings = async () => {
     setLoading(true);
     try {
-      const data = await dataService.getBookings(undefined, 'admin');
+      const data = await dataService.getBookings();
       setBookings(data);
     } catch (err) {
       console.error(err);
@@ -34,16 +35,7 @@ export const BookingManager: React.FC = () => {
   const handleUpdateStatus = async (bookingId: string, newPaymentStatus: 'Pending' | 'Verified' | 'Rejected', newBookingStatus: 'PENDING' | 'CONFIRMED' | 'CANCELLED') => {
     setActionLoading(bookingId);
     try {
-      if (isSupabaseConfigured) {
-        await supabase
-          .from('bookings')
-          .update({
-            payment_status: newPaymentStatus,
-            status: newBookingStatus,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', bookingId);
-      }
+      await api.bookings.updateStatus(bookingId, newBookingStatus, newPaymentStatus);
       
       // Also update local storage if fallback
       const saved = localStorage.getItem('premier_bookings_store_v2');

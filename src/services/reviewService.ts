@@ -1,6 +1,6 @@
 import { Review } from '../types';
 import { api } from './api';
-import { dataService } from '../lib/supabase';
+import { dataService } from '../services/dataService';
 
 export interface ReviewStats {
   count: number;

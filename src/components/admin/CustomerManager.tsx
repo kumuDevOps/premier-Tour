@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase, isSupabaseConfigured } from '../../lib/supabase';
+import { api } from '../../services/api';
 import { Users, Mail, Phone, Edit2, Shield, User, Search, CheckCircle2 } from 'lucide-react';
 import { UserProfile } from '../../types';
 import { SEED_USERS } from '../../data/mockData';
@@ -10,51 +10,34 @@ export const CustomerManager: React.FC = () => {
   const [search, setSearch] = useState('');
   const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
 
+  
   const fetchCustomers = async () => {
     setLoading(true);
-    let loadedUsers: UserProfile[] = [];
-
-    if (isSupabaseConfigured) {
-      try {
-        const { data, error } = await supabase.from('users').select('*').order('created_at', { ascending: false });
-        if (data && data.length > 0) {
-          loadedUsers = data as UserProfile[];
-        }
-      } catch (err) {
-        console.warn('Could not fetch users from Supabase, checking local stores:', err);
-      }
-    }
-
-    if (loadedUsers.length === 0) {
+    try {
+      // Typically there would be an admin endpoint to get all users
+      // But for now, we'll try to use local store or a mock if API doesn't exist
       const stored = localStorage.getItem('premier_users_store');
       if (stored) {
-        try {
-          loadedUsers = JSON.parse(stored);
-        } catch (e) {
-          console.error(e);
-        }
+        setCustomers(JSON.parse(stored));
+      } else {
+        setCustomers(SEED_USERS);
       }
+    } catch (e) {
+      console.error(e);
     }
-
-    if (loadedUsers.length === 0) {
-      loadedUsers = SEED_USERS;
-      localStorage.setItem('premier_users_store', JSON.stringify(SEED_USERS));
-    }
-
-    setCustomers(loadedUsers);
     setLoading(false);
   };
+
 
   useEffect(() => {
     fetchCustomers();
   }, []);
 
+  
   const handleRoleToggle = async (user: UserProfile) => {
     const newRole = user.role === 'admin' ? 'user' : 'admin';
     try {
-      if (isSupabaseConfigured) {
-        await supabase.from('users').update({ role: newRole }).eq('id', user.id);
-      }
+      // Mocking update as Express API might not have an admin user update endpoint
       const updated = customers.map(c => c.id === user.id ? { ...c, role: newRole } : c);
       setCustomers(updated);
       localStorage.setItem('premier_users_store', JSON.stringify(updated));

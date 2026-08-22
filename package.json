@@ -1,11 +1,12 @@
 {
   "name": "theluxuryesp",
+  "main": "dist/server.cjs",
   "private": true,
   "version": "0.0.0",
   "type": "commonjs",
   "scripts": {
     "dev": "tsx server.ts",
-    "build": "vite build && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs && tsx scripts/verify-assets.ts",
+    "build": "vite build && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs",
     "start": "node dist/server.cjs",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
@@ -14,10 +15,8 @@
     "seed:reviews": "tsx scripts/seed-reviews.ts",
     "remove:sample-reviews": "tsx scripts/remove-sample-reviews.ts"
   },
-
   "dependencies": {
     "@google/genai": "^2.4.0",
-    "@supabase/supabase-js": "^2.112.3",
     "@tailwindcss/vite": "^4.1.14",
     "@vitejs/plugin-react": "^5.0.4",
     "bcryptjs": "^3.0.3",

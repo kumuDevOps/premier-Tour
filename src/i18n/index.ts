@@ -8,7 +8,7 @@ import { ja } from './translations/ja';
 import { cn } from './translations/cn';
 import { ru } from './translations/ru';
 import { hin } from './translations/in';
-import { ar } from './translations/ar';
+import { ar } from './translations/ae';
 
 export const TRANSLATIONS = {
   EN: en,

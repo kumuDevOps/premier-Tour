@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { dataService } from '../../lib/supabase';
+import { dataService } from '../../services/dataService';
 import { Plus, Edit2, Trash2 } from 'lucide-react';
 import { BlogPost } from '../../types';
 import { BlogFormModal } from './BlogFormModal';

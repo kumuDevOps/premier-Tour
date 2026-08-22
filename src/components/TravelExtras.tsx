@@ -51,15 +51,6 @@ const EXTRAS_DATA = [
     icon: UtensilsCrossed,
     image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=600&q=80',
     button: 'VIEW DINING'
-  },
-  {
-    id: 'transfers',
-    title: 'Helicopter Transfers',
-    description: 'Skip the traffic. Upgrade your ground transfers to VIP helicopter or scenic seaplane routes directly to your resort.',
-    badge: 'UPGRADE',
-    icon: PlaneTakeoff,
-    image: 'https://images.unsplash.com/photo-1517436073-3b1b1519fce3?auto=format&fit=crop&w=600&q=80',
-    button: 'BOOK AVIATION'
   }
 ];
 

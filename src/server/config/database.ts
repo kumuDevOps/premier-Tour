@@ -6,7 +6,10 @@ dotenv.config();
 const DEFAULT_MONGODB_URI = 'mongodb+srv://kumudevops_db_user:tncvBxik2FwUrgel@cluster0.tmtosz7.mongodb.net/premier_tours?retryWrites=true&w=majority&appName=Cluster0';
 
 export async function connectDatabase(): Promise<typeof mongoose | null> {
-  const uri = process.env.MONGODB_URI || DEFAULT_MONGODB_URI;
+  let uri = process.env.MONGODB_URI || DEFAULT_MONGODB_URI;
+  if (uri.includes('example.mongodb.net')) {
+    uri = DEFAULT_MONGODB_URI;
+  }
 
   if (!uri) {
     console.warn('[MongoDB Warning] MONGODB_URI is not defined. Running in mock/offline mode.');
@@ -20,6 +23,7 @@ export async function connectDatabase(): Promise<typeof mongoose | null> {
     }
 
     mongoose.set('strictQuery', false);
+    mongoose.set('bufferCommands', false); // CRITICAL: fail fast, don't hang
     
     console.log('[MongoDB] Connecting to MongoDB Atlas (premier_tours)...');
     

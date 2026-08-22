@@ -22,7 +22,7 @@ import { Logo } from '../components/Logo';
 
 export const AuthPage: React.FC = () => {
   const { t } = useLanguage();
-  const { signIn, signUp, resetPassword, resendConfirmationEmail, isSupabaseLive } = useAuth();
+  const { signIn, signUp, resetPassword, resendConfirmationEmail } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as any)?.from?.pathname || '/dashboard';
@@ -98,28 +98,33 @@ export const AuthPage: React.FC = () => {
     setSubmitting(true);
     setToast(null);
 
-    const result = await signIn(email, password);
-    setSubmitting(false);
-
-    if (!result.success && result.error) {
-      const msg =
-        typeof result.error === 'string'
-          ? result.error
-          : (result.error as any).message || 'Invalid login credentials. Please verify your email and password.';
-      if (result.requiresConfirmation || msg.toLowerCase().includes('confirmation')) {
-        setPendingConfirmationEmail(email.trim());
-      }
-      showToast('error', msg);
-    } else {
-      showToast('success', 'Authentication successful! Redirecting...');
-      const targetRole = result.role || result.user?.role || 'user';
-      setTimeout(() => {
-        if (targetRole === 'admin') {
-          navigate('/admin', { replace: true });
-        } else {
-          navigate(from && from !== '/admin' ? from : '/dashboard', { replace: true });
+    try {
+      const result = await signIn(email.trim(), password.trim());
+      
+      if (!result.success && result.error) {
+        const msg =
+          typeof result.error === 'string'
+            ? result.error
+            : (result.error as any).message || 'Invalid login credentials. Please verify your email and password.';
+        if (result.requiresConfirmation || msg.toLowerCase().includes('confirmation')) {
+          setPendingConfirmationEmail(email.trim());
         }
-      }, 500);
+        showToast('error', msg);
+      } else {
+        showToast('success', 'Authentication successful! Redirecting...');
+        const targetRole = result.role || result.user?.role || 'user';
+        setTimeout(() => {
+          if (targetRole === 'admin') {
+            navigate('/admin', { replace: true });
+          } else {
+            navigate(from && from !== '/admin' ? from : '/dashboard', { replace: true });
+          }
+        }, 1500);
+      }
+    } catch (err: any) {
+      showToast('error', err.message || 'An unexpected error occurred during login.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -149,30 +154,35 @@ export const AuthPage: React.FC = () => {
     setSubmitting(true);
     setToast(null);
 
-    const result = await signUp(email, password, fullName);
-    setSubmitting(false);
-
-    if (!result.success && result.error) {
-      const msg =
-        typeof result.error === 'string'
-          ? result.error
-          : (result.error as any).message || 'Sign up encountered an issue.';
-      if (msg.toLowerCase().includes('already registered')) {
-        showToast('error', 'User already registered. Please switch to Sign In.');
+    try {
+      const result = await signUp(fullName, email, password);
+      
+      if (!result.success && result.error) {
+        const msg =
+          typeof result.error === 'string'
+            ? result.error
+            : (result.error as any).message || 'Sign up encountered an issue.';
+        if (msg.toLowerCase().includes('already registered')) {
+          showToast('error', 'User already registered. Please switch to Sign In.');
+        } else {
+          showToast('error', msg);
+        }
       } else {
-        showToast('error', msg);
+        if (result.requiresConfirmation) {
+          setPendingConfirmationEmail(email.trim());
+          showToast('success', `Account created successfully! We sent a confirmation email to ${email.trim()}. Please verify your email before signing in.`);
+          setActiveTab('signin');
+        } else {
+          showToast('success', 'Account created successfully! Redirecting to your dashboard...');
+          setTimeout(() => {
+            navigate('/dashboard', { replace: true });
+          }, 700);
+        }
       }
-    } else {
-      if (result.requiresConfirmation) {
-        setPendingConfirmationEmail(email.trim());
-        showToast('success', `Account created successfully! We sent a confirmation email to ${email.trim()}. Please verify your email before signing in.`);
-        setActiveTab('signin');
-      } else {
-        showToast('success', 'Account created successfully! Redirecting to your dashboard...');
-        setTimeout(() => {
-          navigate('/dashboard', { replace: true });
-        }, 700);
-      }
+    } catch (err: any) {
+      showToast('error', err.message || 'An unexpected error occurred during sign up.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -185,13 +195,17 @@ export const AuthPage: React.FC = () => {
     }
 
     setSubmitting(true);
-    const result = await resetPassword(email);
-    setSubmitting(false);
-
-    if (result.success) {
-      showToast('success', result.message || 'Password reset link sent to your email.');
-    } else {
-      showToast('error', result.error?.message || 'Failed to dispatch password reset request.');
+    try {
+      const result = await resetPassword(email);
+      if (result.success) {
+        showToast('success', (result as any).message || 'Password reset link sent to your email.');
+      } else {
+        showToast('error', (result as any).error?.message || (result as any).error || 'Failed to dispatch password reset request.');
+      }
+    } catch (err: any) {
+      showToast('error', err.message || 'An unexpected error occurred during password reset.');
+    } finally {
+      setSubmitting(false);
     }
   };
 

@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { UploadCloud, CheckCircle2, FileText, AlertCircle, RefreshCw, Eye } from 'lucide-react';
-import { dataService } from '../lib/supabase';
+import { dataService } from '../services/dataService';
 
 interface ReceiptUploadProps {
   bookingId: string;
@@ -86,7 +86,7 @@ export const ReceiptUpload: React.FC<ReceiptUploadProps> = ({
     setErrorMsg(null);
 
     try {
-      const uploadedUrl = await dataService.uploadReceiptFile(file, bookingId);
+      const uploadedUrl = await dataService.uploadReceiptFile(file);
       await dataService.updateBookingReceipt(bookingId, uploadedUrl);
 
       setUploadSuccess(true);

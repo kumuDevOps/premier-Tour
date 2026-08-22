@@ -5,7 +5,7 @@ import { SEOHelmet } from '../components/SEOHelmet';
 import { PageHero } from "../components/PageHero";
 import { useLanguage } from '../context/LanguageContext';
 import { BANK_DETAILS } from '../data/mockData';
-import { dataService } from '../lib/supabase';
+import { dataService } from '../services/dataService';
 import {
   Phone,
   Mail,

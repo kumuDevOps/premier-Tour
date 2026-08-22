@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Star, Upload, CheckCircle2, Image as ImageIcon, Trash2 } from 'lucide-react';
-import { dataService } from '../../lib/supabase';
+import { dataService } from '../../services/dataService';
 import { Review, CategoryRatings, ServiceType } from '../../types';
 import { useAuth } from '../../context/AuthContext';
 import { StarRating } from './StarRating';

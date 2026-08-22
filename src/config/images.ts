@@ -3,7 +3,7 @@ import { BANNER_IMAGES, BANNER_LOCAL_FALLBACKS, BANNER_ALT_TEXTS, DEFAULT_FALLBA
 export { BANNER_IMAGES, BANNER_LOCAL_FALLBACKS, BANNER_ALT_TEXTS, DEFAULT_FALLBACK_IMAGE };
 
 export const STATIC_IMAGES = {
-  logo: '/assets/brand/premier-tours-logo.webp',
+  logo: 'https://res.cloudinary.com/o1pdinam/image/upload/v1787392236/logo.jpg',
   homeBanner: BANNER_IMAGES.home,
   aboutBanner: BANNER_IMAGES.about,
   contactBanner: BANNER_IMAGES.contact,

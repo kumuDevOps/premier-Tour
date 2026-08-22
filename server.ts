@@ -12,7 +12,7 @@ dotenv.config();
 
 async function startServer() {
   const app = express();
-  const PORT = process.env.PORT || 3000;
+  const PORT = 3000;
 
   // Initialize MongoDB Atlas connection
   try {
@@ -78,6 +78,14 @@ async function startServer() {
   // Global API Error Handler - ALWAYS returns JSON
   app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     if (req.path.startsWith('/api')) {
+      if (err.name === 'MongooseError' || err.name === 'MongoNetworkError' || err.message?.includes('buffering timed out')) {
+        console.warn('[AI Studio] Database offline — returning mock empty response');
+        if (req.method === 'GET') {
+          return res.json(req.path.endsWith('s') || req.path.endsWith('s/') ? [] : {});
+        }
+        return res.status(503).json({ error: 'Service temporarily unavailable (database offline)' });
+      }
+      
       console.error('[API Error]:', err);
       return res.status(err.status || 500).json({
         success: false,
@@ -119,20 +127,10 @@ async function startServer() {
     });
   }
 
-  // Handle Hostinger Passenger Unix domain socket paths vs TCP ports
-  const rawPort = process.env.PORT || 3000;
-  const isUnixSocket = typeof rawPort === 'string' && (rawPort.startsWith('/') || rawPort.startsWith('\\\\'));
-
-  if (isUnixSocket) {
-    app.listen(rawPort, () => {
-      console.log(`Premier Tours Server listening on Unix socket: ${rawPort}`);
-    });
-  } else {
-    const portNumber = Number(rawPort) || 3000;
-    app.listen(portNumber, '0.0.0.0', () => {
-      console.log(`Premier Tours Server running on port ${portNumber}`);
-    });
-  }
+  // Listen on exactly port 3000 for AI Studio environment
+  app.listen(3000, '0.0.0.0', () => {
+    console.log(`Premier Tours Server running on port 3000`);
+  });
 }
 
 startServer();

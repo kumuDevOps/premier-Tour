@@ -17,14 +17,13 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { Tour } from '../types';
-import { dataService } from '../lib/supabase';
+import { dataService } from '../services/dataService';
 import { SEOHelmet } from '../components/SEOHelmet';
 import { PageHero } from "../components/PageHero";
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useLocalizedContent } from '../hooks/useLocalizedContent';
 import { TourPackageCard } from '../components/TourPackageCard';
-import { ReviewsSection } from '../components/ReviewsSection';
 import { useCatalogData } from '../hooks/useCatalogData';
 import { resolveImageUrl } from '../utils/imageUtils';
 const CATEGORIES = ['All', 'Luxury', 'Safari', 'Cultural', 'Adventure', 'Eco'];
@@ -339,10 +338,6 @@ export const ToursPage: React.FC = () => {
           </div>
         )}
 
-      </div>
-      {/* Tours Review Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 mb-10">
-        <ReviewsSection limit={3} showFilters={false} filterServiceType="tour" />
       </div>
     </div>
   );

@@ -32,7 +32,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   initialTab = 'signin',
   onSuccess,
 }) => {
-  const { signIn, signUp, resetPassword, quickDemoLogin, isSupabaseLive } = useAuth();
+  const { signIn, signUp, resetPassword, quickDemoLogin } = useAuth();
   const [activeTab, setActiveTab] = useState<'signin' | 'signup' | 'forgot'>(initialTab);
 
   const [email, setEmail] = useState('');
@@ -111,7 +111,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     if (res.success) {
       showToast('success', 'Reset link sent! Please check your email.');
     } else {
-      showToast('error', res.error?.message || 'Failed to send reset link.');
+      showToast('error', typeof res.error === "string" ? res.error : (res.error as any)?.message || 'Failed to send reset link.');
     }
   };
 
@@ -150,7 +150,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </div>
             <h2 className="font-sans text-lg font-bold">Premier Tour Booking</h2>
             <p className="text-xs text-emerald-300/90 mt-0.5">
-              {isSupabaseLive ? 'Supabase Secure Authentication' : 'Local Authentication Mode'}
+              MongoDB Authentication Mode
             </p>
           </div>
 

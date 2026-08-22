@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase, isSupabaseConfigured, dataService } from '../../lib/supabase';
+import { dataService } from '../../services/dataService';
 import { 
   Users, Map, Hotel, CalendarCheck, TrendingUp, 
   DollarSign, Clock, CheckCircle2, ArrowUpRight, Compass, ShieldCheck
@@ -17,7 +17,7 @@ export const AdminOverview: React.FC = () => {
       setLoading(true);
       try {
         const [bList, tList, hList] = await Promise.all([
-          dataService.getBookings(undefined, 'admin'),
+          dataService.getBookings(),
           dataService.getTours(),
           dataService.getHotels(),
         ]);

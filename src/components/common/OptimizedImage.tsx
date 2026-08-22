@@ -24,13 +24,13 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
   onLoad,
   ...rest
 }) => {
-  const initialUrl = getImageUrl(src, fallback);
+  const initialUrl = getImageUrl(src, fallback, alt);
   const [currentSrc, setCurrentSrc] = useState<string>(initialUrl);
   const [hasFailed, setHasFailed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const resolved = getImageUrl(src, fallback);
+    const resolved = getImageUrl(src, fallback, alt);
     setCurrentSrc(resolved);
     setHasFailed(false);
     setIsLoading(true);
@@ -39,7 +39,7 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
   const handleError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     if (!hasFailed) {
       setHasFailed(true);
-      const fallbackUrl = getImageUrl(fallback, DEFAULT_FALLBACK_IMAGE);
+      const fallbackUrl = getImageUrl(fallback, DEFAULT_FALLBACK_IMAGE, alt);
       if (currentSrc !== fallbackUrl) {
         setCurrentSrc(fallbackUrl);
       }

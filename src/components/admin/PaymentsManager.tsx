@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase, isSupabaseConfigured, dataService } from '../../lib/supabase';
+import { dataService } from '../../services/dataService';
 import { CreditCard, DollarSign, Download, CheckCircle2, Clock, FileText, ArrowUpRight, Search, Eye, X, ExternalLink } from 'lucide-react';
 import { Booking } from '../../types';
 
@@ -12,7 +12,7 @@ export const PaymentsManager: React.FC = () => {
   const fetchPayments = async () => {
     setLoading(true);
     try {
-      const data = await dataService.getBookings(undefined, 'admin');
+      const data = await dataService.getBookings();
       setBookings(data);
     } catch (err) {
       console.error(err);

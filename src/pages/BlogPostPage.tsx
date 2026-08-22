@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { BlogPost, Tour } from '../types';
-import { dataService } from '../lib/supabase';
+import { dataService } from '../services/dataService';
 import { useLanguage } from '../context/LanguageContext';
 import { useLocalizedContent } from '../hooks/useLocalizedContent';
 import { useCurrency } from '../context/CurrencyContext';
@@ -100,7 +100,7 @@ export const BlogPostPage: React.FC = () => {
         name: 'Premier Tours',
         logo: {
           '@type': 'ImageObject',
-          url: 'https://theluxuryesp.com/assets/brand/premier-tours-logo.webp',
+          url: 'https://res.cloudinary.com/o1pdinam/image/upload/v1787392236/logo.jpg',
         },
       },
       mainEntityOfPage: {

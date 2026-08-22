@@ -8,7 +8,7 @@ import {
   Compass, Hotel, Car, Plane, BookOpen, Phone, Info,
   ShieldCheck, Menu, X, Home, LogOut, Sparkles
 } from 'lucide-react';
-import { dataService } from '../lib/supabase';
+import { dataService } from '../services/dataService';
 import { ProfileDropdown } from './ProfileDropdown';
 import { SafeImage } from './ui/SafeImage';
 import { Logo } from './Logo';

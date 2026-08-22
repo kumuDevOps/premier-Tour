@@ -161,7 +161,7 @@ export const BookingVoucherModal: React.FC<BookingVoucherModalProps> = ({ bookin
                   referrerPolicy="no-referrer"
                 />
                 <div className="text-xs text-[var(--muted)] dark:text-[var(--muted)] space-y-1">
-                  <p className="font-medium text-[var(--text)] dark:text-[var(--text)]">Stored in Supabase Storage Bucket</p>
+                  <p className="font-medium text-[var(--text)] dark:text-[var(--text)]">Stored securely</p>
                   <a
                     href={booking.payment_receipt_url}
                     target="_blank"

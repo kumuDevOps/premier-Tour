@@ -3,7 +3,7 @@ import { useSearchParams, useLocation, Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { Booking, ServiceType } from '../types';
-import { dataService } from '../lib/supabase';
+import { dataService } from '../services/dataService';
 import { useCurrency } from '../context/CurrencyContext';
 import { BankDetailsCard } from '../components/BankDetailsCard';
 import { ReceiptUpload } from '../components/ReceiptUpload';
@@ -120,7 +120,7 @@ export const CheckoutPage: React.FC = () => {
     setErrorMsg(null);
 
     try {
-      // Insert row into Supabase bookings table
+      // Insert row into MongoDB bookings table
       const newBooking = await dataService.createBooking({
         user_id: user?.id || 'u-customer-001',
         service_type: serviceType,
@@ -155,7 +155,7 @@ export const CheckoutPage: React.FC = () => {
         // Safe fallback
       }
     } catch (err: any) {
-      console.error('Failed to create booking row in Supabase:', err);
+      console.error('Failed to create booking row in MongoDB:', err);
       setErrorMsg('Failed to record booking. Please verify your connection.');
     } finally {
       setIsSubmitting(false);

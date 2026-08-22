@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { supabase, isSupabaseConfigured, dataService } from '../../lib/supabase';
+import { dataService } from '../../services/dataService';
 import { Database, Download, RefreshCw, CheckCircle, AlertTriangle } from 'lucide-react';
 import { SEED_TOURS, SEED_HOTELS, SEED_CARS, SEED_FLIGHTS, SEED_BLOG_POSTS } from '../../data/mockData';
 
@@ -16,7 +16,7 @@ export const DatabaseManager = () => {
     try {
       dataService.resetDemoData();
 
-      if (isSupabaseConfigured) {
+      if (true) {
         // Seed tours
         for (const t of SEED_TOURS) {
           await dataService.saveTour(t as any).catch(e => console.warn('Tour seed warning', e));
@@ -60,7 +60,7 @@ export const DatabaseManager = () => {
            <div>
              <h3 className="font-bold text-[var(--text)] dark:text-white mb-1">Seed Database</h3>
              <p className="text-sm text-[var(--muted)] max-w-2xl">
-               Populate your Supabase tables with the default placeholder catalog items (Tours, Hotels, Cars, Flights). This is useful for initializing a new environment.
+               Populate your MongoDB collections with the default placeholder catalog items (Tours, Hotels, Cars, Flights). This is useful for initializing a new environment.
              </p>
              
              <div className="mt-4">

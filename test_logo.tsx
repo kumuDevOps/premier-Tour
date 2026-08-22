@@ -16,7 +16,7 @@ export const Logo: React.FC<LogoProps> = ({
   to = '/',
   imgClassName = '',
 }) => {
-  const logoSrc = 'https://res.cloudinary.com/o1pdinam/image/upload/v1787392236/logo.jpg';
+  const logoSrc = '/assets/brand/logo.jpg';
 
   const getDimensions = () => {
     switch (size) {

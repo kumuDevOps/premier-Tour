@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Review } from '../../types';
 import { ReviewCard } from './ReviewCard';
-import { dataService } from '../../lib/supabase';
+import { dataService } from '../../services/dataService';
 
 interface ReviewCarouselProps {
   reviews: Review[];

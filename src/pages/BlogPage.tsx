@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { BlogPost } from '../types';
-import { dataService } from '../lib/supabase';
+import { dataService } from '../services/dataService';
 import { resolveImageUrl } from '../utils/imageUtils';
 import { SafeImage } from "../components/ui/SafeImage";
 import { SEOHelmet } from '../components/SEOHelmet';

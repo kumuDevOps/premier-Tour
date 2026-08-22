@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { dataService } from '../../lib/supabase';
+import { dataService } from '../../services/dataService';
 import { X, Save, Plane, AlertCircle } from 'lucide-react';
 import { Flight } from '../../types';
 

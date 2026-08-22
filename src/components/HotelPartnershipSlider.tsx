@@ -4,7 +4,7 @@ import { useLocalizedContent } from '../hooks/useLocalizedContent';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Star, MapPin, Heart } from 'lucide-react';
-import { dataService } from '../lib/supabase';
+import { dataService } from '../services/dataService';
 import { useCurrency } from '../context/CurrencyContext';
 import { useAuth } from '../context/AuthContext';
 import { Hotel } from '../types';

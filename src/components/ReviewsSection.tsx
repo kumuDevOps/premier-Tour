@@ -4,7 +4,7 @@ import { useLocalizedContent } from '../hooks/useLocalizedContent';
 import { motion, AnimatePresence } from 'motion/react';
 import { Star, ThumbsUp, Camera, CheckCircle, ChevronLeft, ChevronRight, X, Sparkles } from 'lucide-react';
 import { Review, Tour } from '../types';
-import { dataService } from '../lib/supabase';
+import { dataService } from '../services/dataService';
 import { reviewService, ReviewStats } from '../services/reviewService';
 import { ReviewSubmissionModal } from './ReviewSubmissionModal';
 import { SafeImage } from './ui/SafeImage';
@@ -35,7 +35,16 @@ export const ReviewsSection: React.FC<{
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const reviewsPerPage = limit || 4;
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const reviewsPerPage = isMobile ? 1 : 2;
 
   useEffect(() => {
     const loadReviews = async () => {
@@ -108,7 +117,8 @@ export const ReviewsSection: React.FC<{
   });
 
   const totalPages = Math.ceil(filteredReviews.length / reviewsPerPage);
-  const paginatedReviews = filteredReviews.slice((currentPage - 1) * reviewsPerPage, currentPage * reviewsPerPage);
+  const validCurrentPage = Math.max(1, Math.min(currentPage, totalPages));
+  const paginatedReviews = filteredReviews.slice((validCurrentPage - 1) * reviewsPerPage, validCurrentPage * reviewsPerPage);
 
   const getInitials = (name?: string) => {
     if (!name) return 'GT';
@@ -221,7 +231,7 @@ export const ReviewsSection: React.FC<{
         {/* Reviews Grid */}
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {[1, 2].map(i => (
+            {Array.from({ length: reviewsPerPage }).map((_, i) => (
               <div key={i} className="bg-white dark:bg-[var(--surface)] rounded-[24px] border border-emerald-500/20 h-64 animate-pulse" />
             ))}
           </div>
@@ -245,7 +255,7 @@ export const ReviewsSection: React.FC<{
           </div>
         ) : (
           <div className="flex flex-col w-full">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="flex flex-col md:flex-row gap-6 w-full">
             <AnimatePresence mode="popLayout">
               {paginatedReviews.map((review) => {
                 const isDemo = Boolean(review.is_demo) || Boolean(review.isSeed) || review.source === 'development';
@@ -255,10 +265,10 @@ export const ReviewsSection: React.FC<{
                   <motion.div
                     key={review.id}
                     layout
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    initial={{ opacity: 0, x: 50 }}
+                    animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    className="bg-white dark:bg-[var(--surface)] rounded-[24px] border border-emerald-500/20 p-6 sm:p-8 hover:shadow-[0_8px_30px_rgba(15,157,114,0.12)] hover:border-emerald-500/40 transition-all duration-300 flex flex-col"
+                    className="bg-white dark:bg-[var(--surface)] rounded-[24px] border border-emerald-500/20 p-6 sm:p-8 hover:shadow-[0_8px_30px_rgba(15,157,114,0.12)] hover:border-emerald-500/40 transition-all duration-300 flex flex-col flex-1 w-full md:w-1/2"
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center gap-4">
@@ -353,19 +363,21 @@ export const ReviewsSection: React.FC<{
           {filteredReviews.length > reviewsPerPage && (
             <div className="mt-12 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-emerald-500/20 pt-6">
               <div className="text-sm font-semibold text-[#71817B] dark:text-[var(--muted)]">
-                Showing {((currentPage - 1) * reviewsPerPage) + 1}–{Math.min(currentPage * reviewsPerPage, filteredReviews.length)} of {filteredReviews.length} reviews
+                Showing {((validCurrentPage - 1) * reviewsPerPage) + 1}–{Math.min(validCurrentPage * reviewsPerPage, filteredReviews.length)} of {filteredReviews.length} reviews
               </div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
+                  disabled={validCurrentPage === 1}
+                  aria-label="Previous reviews"
                   className="p-2 rounded-full border border-emerald-500/20 hover:bg-emerald-50 dark:hover:bg-[#073126] disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-[#10231D] dark:text-white"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
                 <button
                   onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                  disabled={currentPage === totalPages}
+                  disabled={validCurrentPage === totalPages}
+                  aria-label="Next reviews"
                   className="p-2 rounded-full border border-emerald-500/20 hover:bg-emerald-50 dark:hover:bg-[#073126] disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-[#10231D] dark:text-white"
                 >
                   <ChevronRight className="w-5 h-5" />

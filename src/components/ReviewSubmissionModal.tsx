@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Star, Upload, Info, Image as ImageIcon, XCircle, ChevronDown, Check } from 'lucide-react';
 import { Tour, Review, UserProfile } from '../types';
-import { dataService } from '../lib/supabase';
+import { dataService } from '../services/dataService';
 import { useAuth } from '../context/AuthContext';
 
 interface ReviewSubmissionModalProps {
@@ -129,8 +129,8 @@ export const ReviewSubmissionModal: React.FC<ReviewSubmissionModalProps> = ({ is
         for (let i = 0; i < photos.length; i++) {
           try {
             // We'll reuse uploadTourImage for simplicity, passing 'review' as ID
-            const result = await dataService.uploadTourImage(photos[i], `review-${user.id}`);
-            uploadedImageUrls.push(result.url);
+            const resultUrl = await dataService.uploadTourImage(photos[i]);
+            if (resultUrl) uploadedImageUrls.push(resultUrl);
           } catch (uploadErr) {
             console.error('Failed to upload a photo:', uploadErr);
             throw new Error(`Failed to upload photo ${i + 1}. Please try again.`);

@@ -16,7 +16,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { Hotel } from '../types';
-import { dataService } from '../lib/supabase';
+import { dataService } from '../services/dataService';
 import { SEOHelmet } from '../components/SEOHelmet';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -272,7 +272,7 @@ export const HotelsPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
             {filteredHotels.map((hotel, index) => (
               <motion.div
-                key={hotel.id}
+                key={hotel.id || `hotel-${index}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, delay: (index % 8) * 0.06 }}

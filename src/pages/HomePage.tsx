@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
 import { Tour, Hotel as HotelType } from '../types';
-import { dataService } from '../lib/supabase';
+import { dataService } from '../services/dataService';
 import { useLanguage } from '../context/LanguageContext';
 import { useLocalizedContent } from '../hooks/useLocalizedContent';
 import { SEOHelmet } from '../components/SEOHelmet';

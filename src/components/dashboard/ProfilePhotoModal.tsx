@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Camera, Upload, Trash2, X, AlertCircle, CheckCircle2, Loader2, Sparkles, Image as ImageIcon } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { dataService } from '../../lib/supabase';
+import { dataService } from '../../services/dataService';
 
 interface ProfilePhotoModalProps {
   isOpen: boolean;
@@ -87,15 +87,10 @@ export const ProfilePhotoModal: React.FC<ProfilePhotoModalProps> = ({
       setErrorMessage(null);
 
       // Upload to Supabase Storage 'profiles' bucket via resilient dataService pipeline
-      const uploadResult = await dataService.uploadProfileAvatar(
-        selectedFile,
-        user.id,
-        user.email
-      );
-
-      if (uploadResult && uploadResult.url) {
+      const uploadResult = await dataService.uploadProfileAvatar(user.id, selectedFile);
+      if (uploadResult) {
         // Update user context and active profile state immediately
-        await updateAvatar(uploadResult.url);
+        await updateAvatar(uploadResult);
         setSuccessMessage('Profile photo updated successfully!');
         
         setTimeout(() => {
@@ -111,7 +106,6 @@ export const ProfilePhotoModal: React.FC<ProfilePhotoModalProps> = ({
     } catch (err: any) {
       console.error('PROFILE IMAGE UPLOAD ERROR', {
         bucket: 'profiles',
-        userId: user.id,
         error: err,
       });
       setErrorMessage(
@@ -130,7 +124,6 @@ export const ProfilePhotoModal: React.FC<ProfilePhotoModalProps> = ({
       setIsRemoving(true);
       setErrorMessage(null);
 
-      await dataService.removeProfileAvatar(user.id, user.email);
       await updateAvatar(null);
 
       setSuccessMessage('Profile photo removed.');
@@ -157,7 +150,6 @@ export const ProfilePhotoModal: React.FC<ProfilePhotoModalProps> = ({
       if (parts.length > 1) return (parts[0][0] + parts[1][0]).toUpperCase();
       return parts[0][0].toUpperCase();
     }
-    return user.email?.charAt(0).toUpperCase() || 'T';
   };
 
   return (
