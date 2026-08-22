@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /checkout
+Disallow: /payment
+
+Sitemap: https://theluxuryesp.com/sitemap.xml

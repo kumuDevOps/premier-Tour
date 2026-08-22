@@ -1,0 +1,83 @@
+{
+  "about": {
+    "name": "About Us",
+    "sourcePage": "https://unsplash.com/photos/team-members-gripping-wrists-in-unity-gesture-Y5bvRlcCx8k",
+    "cdnBase": "https://images.unsplash.com/photo-1600880292089-90a7e086ee0c",
+    "cdnUrl": "https://images.unsplash.com/photo-1600880292089-90a7e086ee0c?auto=format&fit=crop&w=1920&q=80",
+    "localUrl": "/assets/banners/about-banner.webp",
+    "size": 530903,
+    "contentType": "image/jpeg"
+  },
+  "blog": {
+    "name": "Blog",
+    "sourcePage": "https://unsplash.com/photos/an-aerial-view-of-a-beach-with-rocks-and-water-MJhECpYETyg",
+    "cdnBase": "https://images.unsplash.com/photo-1648819955193-776922ff68b5",
+    "cdnUrl": "https://images.unsplash.com/photo-1648819955193-776922ff68b5?auto=format&fit=crop&w=1920&q=80",
+    "localUrl": "/assets/banners/blog-banner.webp",
+    "size": 497816,
+    "contentType": "image/jpeg"
+  },
+  "home": {
+    "name": "Home",
+    "sourcePage": "https://unsplash.com/photos/a-beach-with-a-palm-tree-and-chairs-on-it-F-URY4TcXNI",
+    "cdnBase": "https://images.unsplash.com/photo-1649923113200-732d6fefbb6a",
+    "cdnUrl": "https://images.unsplash.com/photo-1649923113200-732d6fefbb6a?auto=format&fit=crop&w=1920&q=80",
+    "localUrl": "/assets/banners/home-banner.webp",
+    "size": 641621,
+    "contentType": "image/jpeg"
+  },
+  "tours": {
+    "name": "Tours",
+    "sourcePage": "https://unsplash.com/photos/blue-train-on-nine-arches-bridge-jpTT_SAU034",
+    "cdnBase": "https://images.unsplash.com/photo-1566296314736-6eaac1ca0cb9",
+    "cdnUrl": "https://images.unsplash.com/photo-1566296314736-6eaac1ca0cb9?auto=format&fit=crop&w=1920&q=80",
+    "localUrl": "/assets/banners/tours-banner.webp",
+    "size": 771252,
+    "contentType": "image/jpeg"
+  },
+  "hotels": {
+    "name": "Hotels",
+    "sourcePage": "https://unsplash.com/photos/a-resort-is-bathed-in-the-warmth-of-sunset-srZtj-Iq7dw",
+    "cdnBase": "https://images.unsplash.com/photo-1743592323402-2a8392831f44",
+    "cdnUrl": "https://images.unsplash.com/photo-1743592323402-2a8392831f44?auto=format&fit=crop&w=1920&q=80",
+    "localUrl": "/assets/banners/hotels-banner.webp",
+    "size": 476930,
+    "contentType": "image/jpeg"
+  },
+  "flights": {
+    "name": "Flights",
+    "sourcePage": "https://unsplash.com/photos/aerial-photography-of-airliner-rf6ywHVkrlY",
+    "cdnBase": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05",
+    "cdnUrl": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1920&q=80",
+    "localUrl": "/assets/banners/flights-banner.webp",
+    "size": 221205,
+    "contentType": "image/jpeg"
+  },
+  "cars": {
+    "name": "Cars",
+    "sourcePage": "https://unsplash.com/photos/yellow-taxi-cab-on-street-during-daytime-lopl80HjSPs",
+    "cdnBase": "https://images.unsplash.com/photo-1630717285906-29364ffacea0",
+    "cdnUrl": "https://images.unsplash.com/photo-1630717285906-29364ffacea0?auto=format&fit=crop&w=1920&q=80",
+    "localUrl": "/assets/banners/cars-banner.webp",
+    "size": 1005155,
+    "contentType": "image/jpeg"
+  },
+  "contact": {
+    "name": "Contact Us",
+    "sourcePage": "https://unsplash.com/photos/a-wooden-table-topped-with-scrabble-tiles-spelling-contact-48CkLuEGgWU",
+    "cdnBase": "https://images.unsplash.com/photo-1740560051533-3acef26ace95",
+    "cdnUrl": "https://images.unsplash.com/photo-1740560051533-3acef26ace95?auto=format&fit=crop&w=1920&q=80",
+    "localUrl": "/assets/banners/contact-banner.webp",
+    "size": 192279,
+    "contentType": "image/jpeg"
+  },
+  "beachRestaurant": {
+    "name": "Beach Restaurant",
+    "sourcePage": "https://unsplash.com/photos/a-beach-restaurant-boasts-beautiful-views-and-a-flag-A--IPf3R6_E",
+    "cdnBase": "https://images.unsplash.com/photo-1743804880007-4d48943074ca",
+    "cdnUrl": "https://images.unsplash.com/photo-1743804880007-4d48943074ca?auto=format&fit=crop&w=1920&q=80",
+    "localUrl": "/assets/banners/beachRestaurant-banner.webp",
+    "size": 942174,
+    "contentType": "image/jpeg"
+  }
+}

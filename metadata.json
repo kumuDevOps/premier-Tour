@@ -1,0 +1,6 @@
+{
+  "name": "Premier Tour Booking",
+  "description": "Premier luxury travel, tour packages, hotels, flights, and vehicle booking platform with MongoDB Atlas backend, JWT authentication, receipt verification workflow, and administrator portal.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

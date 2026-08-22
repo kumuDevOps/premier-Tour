@@ -1,0 +1,585 @@
+@import "tailwindcss";
+
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Poppins", sans-serif;
+  --font-heading: "Poppins", sans-serif;
+  
+}
+
+@layer base {
+  :root {
+    /* Light Theme - Pure Luxury White & Emerald */
+    --primary: #0F9D72;
+    --primary-light: #25B987;
+    --primary-dark: #087A5A;
+    --primary-deep: #075C46;
+    --secondary: #16A979;
+    --accent: #20B486;
+    --atmospheric: #F2F8F5;
+    --background: #F8FCFA;
+    --surface: #FFFFFF;
+    --surface-subtle: #F4FAF7;
+    --text: #10231D;
+    --text-secondary: #33453F;
+    --muted: #71817B;
+    --border-subtle: #DDEBE5;
+    --border-hover: #BBDDD0;
+    
+    /* Light Card System */
+    --card-bg: #FFFFFF;
+    --card-border: #DDEBE5;
+    --card-shadow: 0 4px 20px -2px rgba(15, 157, 114, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+    --card-shadow-hover: 0 12px 30px -4px rgba(15, 157, 114, 0.12), 0 4px 12px -2px rgba(0, 0, 0, 0.04);
+    
+    /* Primary Gradient */
+    --gradient-cta: linear-gradient(135deg, #0F9D72 0%, #25B987 45%, #8ED8B8 100%);
+    --gradient-hero-text: linear-gradient(90deg, #0F9D72, #32C995, #9BE5C7, #0F9D72);
+
+    --color-bg-primary: var(--background);
+    --color-surface: var(--surface);
+    --color-text-main: var(--text);
+  }
+
+  .dark {
+    /* Dark Theme - Deep Emerald & Luxury Eco-Resort Night */
+    --primary: #34D39B;
+    --primary-light: #6EE7B7;
+    --primary-dark: #10B981;
+    --primary-deep: #05251C;
+    --secondary: #10B981;
+    --accent: #34D399;
+    --atmospheric: #05251C;
+    --background: #031812;
+    --surface: #073126;
+    --surface-subtle: #0A3A2B;
+    --text: #F0FDF4;
+    --text-secondary: #B7D9CC;
+    --muted: #7FA99A;
+    --border-subtle: rgba(52, 211, 153, 0.20);
+    --border-hover: rgba(52, 211, 153, 0.35);
+    
+    /* Dark Card System */
+    --card-bg: #073126;
+    --card-border: rgba(52, 211, 153, 0.20);
+    --card-shadow: 0 6px 24px -2px rgba(0, 0, 0, 0.5);
+    --card-shadow-hover: 0 16px 40px -4px rgba(0, 0, 0, 0.7), 0 0 20px rgba(52, 211, 153, 0.15);
+
+    /* Primary Gradient in Dark */
+    --gradient-cta: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+    --gradient-hero-text: linear-gradient(90deg, #34D399, #6EE7B7, #B7D9CC, #34D399);
+
+    --color-bg-primary: var(--background);
+    --color-surface: var(--surface);
+    --color-text-main: var(--text);
+  }
+
+  html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--color-bg-primary);
+    background-image: 
+      radial-gradient(circle at 10% 10%, rgba(15, 157, 114, 0.03), transparent 25%),
+      radial-gradient(circle at 90% 20%, rgba(37, 185, 135, 0.03), transparent 30%);
+    background-attachment: fixed;
+    color: var(--color-text-main);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    line-height: 1.6;
+  }
+  
+  .dark body {
+    background-image: 
+      radial-gradient(circle at 10% 10%, rgba(52, 211, 153, 0.08), transparent 35%),
+      radial-gradient(circle at 90% 90%, rgba(16, 185, 129, 0.05), transparent 40%);
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: -0.025em;
+    font-weight: 700;
+  }
+
+}
+
+::selection {
+  background-color: #0F9D72;
+  color: #FFFFFF;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@layer utilities {
+  /* Unified Premier Card System */
+  .premier-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    box-shadow: var(--card-shadow);
+    border-radius: 16px;
+    transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.25s cubic-bezier(0.2, 0, 0, 1), border-color 0.25s ease;
+  }
+
+  .premier-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--card-shadow-hover);
+    border-color: var(--border-hover);
+  }
+
+  .premier-card-static {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    box-shadow: var(--card-shadow);
+    border-radius: 16px;
+  }
+
+  .premier-panel {
+    background-color: var(--surface);
+    border: 1px solid var(--border-subtle);
+    box-shadow: 0 8px 32px rgba(15, 157, 114, 0.06);
+    border-radius: 24px;
+  }
+  
+  .dark .premier-panel {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+  }
+
+  .premier-nav {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border-subtle);
+    box-shadow: 0 4px 20px -2px rgba(15, 157, 114, 0.04);
+  }
+  
+  .dark .premier-nav {
+    background: rgba(6, 21, 16, 0.92);
+    border-bottom: 1px solid rgba(73, 201, 151, 0.16);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+  }
+
+  .premier-input {
+    background-color: #FFFFFF;
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    color: var(--text);
+    transition: all 0.2s ease;
+  }
+
+  .dark .premier-input {
+    background-color: #081C16;
+    border-color: rgba(73, 201, 151, 0.2);
+    color: #F2FFFA;
+  }
+
+  .premier-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(15, 157, 114, 0.12);
+    outline: none;
+  }
+
+  .dark .premier-input:focus {
+    border-color: #39D39B;
+    box-shadow: 0 0 0 3px rgba(57, 211, 155, 0.18);
+  }
+
+  /* Primary Button with Emerald Luxury Gradient */
+  .emerald-btn {
+    background: var(--gradient-cta);
+    color: #FFFFFF;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+    box-shadow: 0 4px 14px rgba(15, 157, 114, 0.25);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .emerald-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px rgba(15, 157, 114, 0.35);
+    filter: brightness(1.03);
+  }
+
+  .btn-secondary {
+    background: #FFFFFF;
+    border: 1px solid var(--border-subtle);
+    color: var(--text);
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+
+  .dark .btn-secondary {
+    background: #0D281F;
+    border-color: rgba(73, 201, 151, 0.22);
+    color: #F2FFFA;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--primary);
+    background: var(--atmospheric);
+    color: var(--primary-dark);
+  }
+
+  .dark .btn-secondary:hover {
+    border-color: #39D39B;
+    background: #102F25;
+    color: #64E5B6;
+  }
+
+  /* Status Badges */
+  .badge-emerald {
+    background-color: #ECFDF5;
+    color: #065F46;
+    border: 1px solid #A7F3D0;
+  }
+  .dark .badge-emerald {
+    background-color: rgba(15, 157, 114, 0.2);
+    color: #6EE7B7;
+    border-color: rgba(15, 157, 114, 0.4);
+  }
+
+  .badge-pending {
+    background-color: #FEF3C7;
+    color: #92400E;
+    border: 1px solid #FDE68A;
+  }
+  .dark .badge-pending {
+    background-color: rgba(217, 119, 6, 0.2);
+    color: #FCD34D;
+    border-color: rgba(217, 119, 6, 0.4);
+  }
+
+  .badge-confirmed {
+    background-color: #D1FAE5;
+    color: #065F46;
+    border: 1px solid #A7F3D0;
+  }
+  .dark .badge-confirmed {
+    background-color: rgba(16, 185, 129, 0.2);
+    color: #6EE7B7;
+    border-color: rgba(16, 185, 129, 0.4);
+  }
+
+  .badge-cancelled {
+    background-color: #FEE2E2;
+    color: #991B1B;
+    border: 1px solid #FECACA;
+  }
+  .dark .badge-cancelled {
+    background-color: rgba(239, 68, 68, 0.2);
+    color: #FCA5A5;
+    border-color: rgba(239, 68, 68, 0.4);
+  }
+
+  .badge-completed {
+    background-color: #ECFDF5;
+    color: #047857;
+    border: 1px solid #A7F3D0;
+  }
+  .dark .badge-completed {
+    background-color: rgba(5, 150, 105, 0.25);
+    color: #A7F3D0;
+    border-color: rgba(5, 150, 105, 0.45);
+  }
+
+  /* Luxury White & Light Green Card */
+  .luxury-card {
+    background-color: #FFFFFF;
+    border: 1px solid rgba(15, 157, 114, 0.16);
+    border-radius: 24px;
+    box-shadow: 0 4px 20px -2px rgba(15, 157, 114, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+    transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.3s cubic-bezier(0.2, 0, 0, 1), border-color 0.25s ease;
+  }
+
+  .dark .luxury-card {
+    background-color: #0D281F;
+    border-color: rgba(73, 201, 151, 0.22);
+    box-shadow: 0 6px 24px -2px rgba(0, 0, 0, 0.5), 0 0 16px rgba(57, 211, 155, 0.05);
+  }
+
+  .luxury-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(15, 157, 114, 0.4);
+    box-shadow: 0 16px 36px -4px rgba(15, 157, 114, 0.14), 0 0 20px rgba(37, 185, 135, 0.08);
+  }
+
+  .dark .luxury-card:hover {
+    border-color: rgba(57, 211, 155, 0.45);
+    box-shadow: 0 18px 44px -4px rgba(0, 0, 0, 0.7), 0 0 24px rgba(57, 211, 155, 0.18);
+  }
+
+  /* Luxury Input with Soft Emerald Glow on Focus */
+  .luxury-input {
+    background-color: #FFFFFF;
+    border: 1px solid rgba(15, 157, 114, 0.2);
+    border-radius: 14px;
+    color: #10231D;
+    transition: all 0.25s ease;
+  }
+
+  .dark .luxury-input {
+    background-color: #081C16;
+    border-color: rgba(73, 201, 151, 0.25);
+    color: #F2FFFA;
+  }
+
+  .luxury-input:focus {
+    border-color: #0F9D72;
+    box-shadow: 0 0 0 3px rgba(15, 157, 114, 0.15), 0 0 16px rgba(15, 157, 114, 0.1);
+    outline: none;
+  }
+
+  .dark .luxury-input:focus {
+    border-color: #39D39B;
+    box-shadow: 0 0 0 3px rgba(57, 211, 155, 0.2), 0 0 20px rgba(57, 211, 155, 0.15);
+    outline: none;
+  }
+
+  /* Gradient Text Helpers */
+  .text-gradient-emerald {
+    background: linear-gradient(135deg, #0F9D72, #25B987);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .dark .text-gradient-emerald {
+    background: linear-gradient(135deg, #39D39B, #64E5B6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Premium Glowing Tour & Package Card System */
+  .package-glow-card {
+    position: relative;
+    background: #FFFFFF;
+    border: 1px solid rgba(15, 157, 114, 0.16);
+    border-radius: 24px;
+    box-shadow: 0 6px 24px -2px rgba(15, 157, 114, 0.07), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+    transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1), transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease;
+    animation: card-breathing-glow 6s ease-in-out infinite;
+  }
+
+  .dark .package-glow-card {
+    background: #0D281F;
+    border: 1px solid rgba(73, 201, 151, 0.22);
+    box-shadow: 0 8px 30px -2px rgba(0, 0, 0, 0.6), 0 0 16px rgba(57, 211, 155, 0.06);
+    animation: dark-card-breathing-glow 6s ease-in-out infinite;
+  }
+
+  .package-glow-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(15, 157, 114, 0.45);
+    box-shadow: 0 20px 40px -4px rgba(15, 157, 114, 0.20), 0 6px 16px -2px rgba(0, 0, 0, 0.04), 0 0 24px rgba(37, 185, 135, 0.12);
+  }
+
+  .dark .package-glow-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(57, 211, 155, 0.5);
+    box-shadow: 0 22px 50px -4px rgba(0, 0, 0, 0.8), 0 0 30px rgba(57, 211, 155, 0.22);
+  }
+
+  /* Compact Circular CTA Button */
+  .btn-circle-cta {
+    width: 42px;
+    height: 42px;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, #0F9D72 0%, #25B987 100%);
+    color: #FFFFFF;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 14px rgba(15, 157, 114, 0.3);
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    flex-shrink: 0;
+  }
+
+  .btn-circle-cta:hover {
+    transform: scale(1.06);
+    box-shadow: 0 6px 20px rgba(15, 157, 114, 0.45);
+    filter: brightness(1.05);
+  }
+
+  .dark .btn-circle-cta {
+    background: linear-gradient(135deg, #0F9D72 0%, #39D39B 100%);
+    box-shadow: 0 4px 16px rgba(57, 211, 155, 0.25);
+  }
+
+  .dark .btn-circle-cta:hover {
+    box-shadow: 0 6px 24px rgba(57, 211, 155, 0.4);
+  }
+
+  .text-gradient-hero {
+    background-image: linear-gradient(90deg, #0F9D72 0%, #25B987 35%, #8ED8B8 70%, #0F9D72 100%);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradient-flow 7s ease infinite;
+  }
+
+  .dark .text-gradient-hero {
+    background-image: linear-gradient(90deg, #39D39B 0%, #64E5B6 35%, #C8DDD5 70%, #39D39B 100%);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradient-flow 7s ease infinite;
+  }
+}
+
+@keyframes gradient-flow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes card-breathing-glow {
+  0%, 100% {
+    box-shadow: 0 6px 24px -2px rgba(15, 157, 114, 0.07), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+    border-color: rgba(15, 157, 114, 0.16);
+  }
+  50% {
+    box-shadow: 0 10px 30px -2px rgba(15, 157, 114, 0.14), 0 0 16px rgba(37, 185, 135, 0.08);
+    border-color: rgba(15, 157, 114, 0.28);
+  }
+}
+
+@keyframes dark-card-breathing-glow {
+  0%, 100% {
+    box-shadow: 0 8px 30px -2px rgba(0, 0, 0, 0.6), 0 0 16px rgba(57, 211, 155, 0.06);
+    border-color: rgba(73, 201, 151, 0.22);
+  }
+  50% {
+    box-shadow: 0 12px 36px -2px rgba(0, 0, 0, 0.7), 0 0 24px rgba(57, 211, 155, 0.15);
+    border-color: rgba(73, 201, 151, 0.38);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .text-gradient-hero,
+  .package-glow-card {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+
+@layer base {
+  :root {
+    --booking-surface: rgba(255, 255, 255, 0.82);
+    --booking-border: rgba(80, 220, 170, 0.35);
+    --booking-shadow: 0 20px 40px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.03);
+    --booking-input: rgba(255, 255, 255, 0.7);
+    --booking-input-border: rgba(0,0,0,0.06);
+    --booking-input-hover: rgba(255, 255, 255, 1);
+    --booking-text: #10231D;
+    --booking-muted: #64748B;
+    --booking-glow: rgba(16, 185, 129, 0.15);
+    --booking-accent: #0F9D72;
+  }
+
+  .dark {
+    --booking-surface: rgba(5, 25, 20, 0.82);
+    --booking-border: rgba(80, 220, 170, 0.25);
+    --booking-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.05);
+    --booking-input: rgba(10, 35, 28, 0.6);
+    --booking-input-border: rgba(255,255,255,0.08);
+    --booking-input-hover: rgba(15, 45, 35, 0.8);
+    --booking-text: #F2FFFA;
+    --booking-muted: #94A3B8;
+    --booking-glow: rgba(16, 185, 129, 0.15);
+    --booking-accent: #10B981;
+  }
+}
+
+@keyframes booking-border-glow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes booking-ambient-pulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .booking-card-wrapper::before,
+  .booking-ambient-glow {
+    animation: none !important;
+    display: none !important;
+  }
+}
+
+
+/* GLOBAL AMBIENT GLOW */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: -1;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(16, 185, 129, 0.08), transparent 35%),
+    radial-gradient(circle at 80% 70%, rgba(52, 211, 153, 0.05), transparent 35%);
+  background-size: 200% 200%;
+  animation: global-ambient-drift 15s ease-in-out infinite alternate;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+.dark body::before {
+  background: 
+    radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.12), transparent 35%),
+    radial-gradient(circle at 90% 80%, rgba(52, 211, 153, 0.10), transparent 35%);
+}
+
+@keyframes global-ambient-drift {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  body::before {
+    animation: none !important;
+  }
+}
+
+/* Global Emerald Button */
+.emerald-btn {
+  background: linear-gradient(135deg, #10B981, #34D399);
+  box-shadow: 0 8px 30px rgba(16,185,129,0.20);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
+  color: white;
+}
+.emerald-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(16,185,129,0.30);
+  filter: brightness(1.05);
+}
+.emerald-btn:active {
+  transform: translateY(0);
+}
